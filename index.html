@@ -371,9 +371,11 @@
         import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
         import { getDatabase, ref, set, push, onValue, remove, update } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 
-        // *** המפתח הסודי שלך ***
+        // *** הגדרות פיירבייס - אבטחה ***
+        // שים לב: המפתח הוסר כדי למנוע התראות ב-GitHub.
+        // עליך להדביק כאן את המפתח שלך (AIza...) כדי שהאפליקציה תעבוד במחשב שלך.
         const firebaseConfig = {
-            apiKey: "AIzaSyCJvUDVuccEZSuTsUSs7o-hnpME2WaTWio",
+            apiKey: "YOUR_API_KEY_HERE", 
             authDomain: "nadlan-pro.firebaseapp.com",
             projectId: "nadlan-pro",
             storageBucket: "nadlan-pro.firebasestorage.app",
@@ -389,6 +391,7 @@
         let currentUser = null;
         let clientsData = {};
         let meetingsData = {};
+        let settingsData = { prime: 6.0 }; // דיפולט
         let customHeaders = new Set();
         let visibleCols = ['name', 'phone', 'city', 'status', 'budget'];
 
@@ -430,14 +433,22 @@
                 updateStats();
                 updateFeed();
             }, (error) => {
-                // טיפול בשגיאות (חסימת נטפרי וכד')
                 console.error("Firebase Error:", error);
-                document.getElementById('liveFeed').innerHTML = `<div style="color:red">שגיאת רשת/חסימה. וודא שהאתר פתוח בנטפרי.</div>`;
+                document.getElementById('liveFeed').innerHTML = `<div style="color:red">שגיאת רשת/חסימה. או שחסר מפתח API בקוד.</div>`;
             });
 
             onValue(ref(db, 'meetings'), snap => {
                 meetingsData = snap.val() || {};
                 if(document.getElementById('calendar').style.display === 'block') renderCalendar();
+            });
+
+            // טעינת הגדרות
+            onValue(ref(db, 'settings'), snap => {
+                const val = snap.val();
+                if(val) {
+                    settingsData = val;
+                    if(document.getElementById('setPrime')) document.getElementById('setPrime').value = settingsData.prime;
+                }
             });
         }
 
@@ -487,26 +498,16 @@
 
         // --- לוגיקה וממשק ---
         
-        // תיקון קריטי: פונקציית הניווט המעודכנת
         window.nav = (p) => {
             const pageEl = document.getElementById(p);
-            
-            // הגנה מפני קריסה אם העמוד לא קיים
             if (!pageEl) {
-                console.error("Page not found:", p);
                 alert("העמוד טרם פותח");
                 return;
             }
-
             document.querySelectorAll('.page').forEach(x => x.style.display='none');
             pageEl.style.display='block';
-            
             document.querySelectorAll('.nav-item').forEach(x => x.classList.remove('active'));
-            // הגנה נוספת לסימון הכפתור
-            if (event && event.currentTarget) {
-                event.currentTarget.classList.add('active');
-            }
-            
+            if (event && event.currentTarget) event.currentTarget.classList.add('active');
             if(p==='calendar') renderCalendar();
         }
 
@@ -575,7 +576,6 @@
         };
 
         window.openModal = () => {
-            document.getElementById('clientForm') && document.getElementById('clientForm').reset(); // הגנה
             document.getElementById('editId').value = '';
             document.getElementById('inpName').value = '';
             document.getElementById('inpSpouse').value = '';
@@ -694,7 +694,16 @@
             if(confirm('למחוק פגישה?')) remove(ref(db, 'meetings/'+mid));
         };
 
-        // --- עזרים ---
+        // --- עזרים ושונות ---
+        
+        // תיקון: פונקציית שמירת הגדרות (שהייתה חסרה)
+        window.saveSettings = () => {
+            const prime = document.getElementById('setPrime').value;
+            update(ref(db, 'settings'), { prime: prime })
+                .then(() => alert('הגדרות נשמרו בהצלחה!'))
+                .catch(err => alert('שגיאה: ' + err.message));
+        };
+
         window.addChildRow = (n='', i='') => {
             document.getElementById('childrenList').innerHTML += `<div class="cr" style="display:flex; gap:5px; margin-bottom:5px;"><input class="cn" value="${n}" placeholder="שם"><input class="ci" value="${i}" placeholder="ת.ז"><button type="button" class="btn-icon" onclick="this.parentElement.remove()">&times;</button></div>`;
         }
@@ -706,7 +715,11 @@
 
         window.quickCalc = () => {
             const p = Number(document.getElementById('qLoan').value);
-            const r = (Number(document.getElementById('qSpread').value)+6)/100/12; 
+            // שימוש בהגדרה מהענן או דיפולט
+            const currentPrime = Number(settingsData.prime || 6.0);
+            const spread = Number(document.getElementById('qSpread').value);
+            // ריבית שנתית כוללת
+            const r = (currentPrime + spread)/100/12; 
             const n = Number(document.getElementById('qYears').value)*12;
             const res = p*r*Math.pow(1+r,n)/(Math.pow(1+r,n)-1);
             document.getElementById('qRes').innerText = Math.round(res).toLocaleString() + ' ₪';
