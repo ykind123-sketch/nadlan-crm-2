@@ -254,7 +254,7 @@
                             <i class="fa-solid fa-person-digging" style="font-size:50px; margin-bottom:20px;"></i>
                             <h3>מודול פרויקטים בבנייה</h3>
                             <p>כאן תוכל לנהל שיווק של בניינים חדשים ותמ"א 38.</p>
-                        </div>
+                            </div>
                     </div>
                 </section>
 
@@ -371,7 +371,8 @@
         import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
         import { getDatabase, ref, set, push, onValue, remove, update } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 
-        // *** הגדרות פיירבייס - מפתח מוטמע ***
+        // *** המפתח שלך נמצא כאן בפנים ***
+        // התעלם מאזהרות של GitHub לגבי שורה זו!
         const firebaseConfig = {
             apiKey: "AIzaSyCJvUDVuccEZSuTsUSs7o-hnpME2WaTWio", 
             authDomain: "nadlan-pro.firebaseapp.com",
@@ -389,7 +390,7 @@
         let currentUser = null;
         let clientsData = {};
         let meetingsData = {};
-        let settingsData = { prime: 6.0 }; // דיפולט
+        let settingsData = { prime: 6.0 };
         let customHeaders = new Set();
         let visibleCols = ['name', 'phone', 'city', 'status', 'budget'];
 
@@ -432,7 +433,7 @@
                 updateFeed();
             }, (error) => {
                 console.error("Firebase Error:", error);
-                document.getElementById('liveFeed').innerHTML = `<div style="color:red">שגיאת רשת/חסימה. או שחסר מפתח API בקוד.</div>`;
+                document.getElementById('liveFeed').innerHTML = `<div style="color:red">שגיאת רשת. וודא שעדכנת Rules במסוף של פיירבייס.</div>`;
             });
 
             onValue(ref(db, 'meetings'), snap => {
@@ -440,7 +441,6 @@
                 if(document.getElementById('calendar').style.display === 'block') renderCalendar();
             });
 
-            // טעינת הגדרות
             onValue(ref(db, 'settings'), snap => {
                 const val = snap.val();
                 if(val) {
@@ -450,7 +450,7 @@
             });
         }
 
-        // --- ייבוא אקסל חכם (מנגנון מלא) ---
+        // --- ייבוא אקסל ---
         document.getElementById('excelIn').addEventListener('change', (e) => {
             const r = new FileReader();
             r.onload = ex => {
@@ -694,7 +694,6 @@
 
         // --- עזרים ושונות ---
         
-        // תיקון: פונקציית שמירת הגדרות (שהייתה חסרה)
         window.saveSettings = () => {
             const prime = document.getElementById('setPrime').value;
             update(ref(db, 'settings'), { prime: prime })
@@ -713,10 +712,8 @@
 
         window.quickCalc = () => {
             const p = Number(document.getElementById('qLoan').value);
-            // שימוש בהגדרה מהענן או דיפולט
             const currentPrime = Number(settingsData.prime || 6.0);
             const spread = Number(document.getElementById('qSpread').value);
-            // ריבית שנתית כוללת
             const r = (currentPrime + spread)/100/12; 
             const n = Number(document.getElementById('qYears').value)*12;
             const res = p*r*Math.pow(1+r,n)/(Math.pow(1+r,n)-1);
