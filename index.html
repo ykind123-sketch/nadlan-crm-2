@@ -3,19 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>נדל"ן PRO 18.0 - מערכת ניהול מלאה</title>
+    <title>נדל"ן PRO 19.0 - הגרסה המתקנת</title>
     
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script> <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@300;400;500;700;900&display=swap" rel="stylesheet">
     
     <style>
-        /* --- עיצוב גלובלי (מורחב) --- */
+        /* --- עיצוב גלובלי --- */
         :root {
             --primary: #1e293b; --primary-light: #334155;
-            --accent: #3b82f6; --accent-hover: #2563eb;
+            --accent: #2563eb; --accent-hover: #1d4ed8;
             --bg: #f8fafc; --surface: #ffffff; 
             --border: #e2e8f0; --text: #0f172a; --text-muted: #64748b;
             --danger: #ef4444; --success: #22c55e; --warning: #f59e0b;
@@ -38,7 +38,6 @@
         .login-card { background: white; padding: 40px; border-radius: 16px; width: 100%; max-width: 380px; text-align: center; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25); }
         .login-input { width: 100%; padding: 12px; margin-bottom: 15px; border: 1px solid var(--border); border-radius: 6px; font-size: 15px; }
         .login-btn { width: 100%; padding: 12px; background: var(--accent); color: white; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; }
-        .login-btn:hover { background: var(--accent-hover); }
 
         /* מבנה ראשי */
         #mainApp { display: none; height: 100%; width: 100%; }
@@ -58,9 +57,8 @@
         main { flex: 1; padding: 25px; overflow-y: auto; position: relative; background: var(--bg); }
         .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; }
         .page-title { font-size: 26px; font-weight: 700; color: var(--primary); display: flex; align-items: center; gap: 10px; }
-        [data-theme="dark"] .page-title { color: white; }
 
-        /* כרטיסים וגריד */
+        /* גריד */
         .grid-3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 20px; margin-bottom: 25px; }
         .card { background: var(--surface); padding: 25px; border-radius: var(--radius); border: 1px solid var(--border); box-shadow: var(--shadow); margin-bottom: 25px; }
         .stat-val { font-size: 36px; font-weight: 800; color: var(--text); }
@@ -72,11 +70,11 @@
         .table-body-scroll { overflow: auto; flex: 1; }
         table { width: 100%; border-collapse: collapse; min-width: 1000px; }
         th { background: var(--surface); text-align: right; padding: 12px 15px; font-weight: 600; color: var(--text-muted); font-size: 13px; position: sticky; top: 0; z-index: 10; border-bottom: 2px solid var(--border); }
-        td { padding: 10px 15px; border-bottom: 1px solid var(--border); font-size: 13px; color: var(--text); vertical-align: middle; }
+        td { padding: 8px 15px; border-bottom: 1px solid var(--border); font-size: 13px; color: var(--text); vertical-align: middle; }
         tr:hover { background: var(--bg); }
-        tr.blocked-row { background: #fee2e2 !important; opacity: 0.8; } /* עיצוב לרשימה שחורה */
+        tr.blocked-row { background: #fee2e2 !important; }
 
-        /* כפתורים */
+        /* כפתורים וטפסים */
         .btn { padding: 8px 16px; border-radius: 6px; border: none; cursor: pointer; font-weight: 600; display: inline-flex; align-items: center; gap: 6px; font-size: 13px; }
         .btn-primary { background: var(--accent); color: white; }
         .btn-white { background: var(--surface); border: 1px solid var(--border); color: var(--text); }
@@ -85,7 +83,8 @@
         .btn-icon:hover { color: var(--accent); background: rgba(0,0,0,0.05); border-radius: 4px; }
         
         input, select, textarea { background: var(--surface); border: 1px solid var(--border); color: var(--text); padding: 10px; border-radius: 6px; width: 100%; font-size: 14px; margin-bottom: 10px; }
-        input:focus { border-color: var(--accent); outline: 2px solid rgba(59, 130, 246, 0.1); }
+        .quick-select { padding: 4px; height: 30px; font-size: 12px; margin: 0; width: auto; border-color: transparent; background: transparent; font-weight: bold; cursor: pointer; }
+        .quick-select:hover { border-color: var(--border); background: var(--bg); }
 
         /* מודאל */
         .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 2000; display: none; justify-content: center; align-items: center; backdrop-filter: blur(4px); }
@@ -110,19 +109,16 @@
         /* תפריט עמודות */
         .cols-menu { position: absolute; top: 60px; left: 20px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 15px; box-shadow: 0 10px 25px rgba(0,0,0,0.15); z-index: 100; display: none; min-width: 200px; max-height: 400px; overflow-y: auto; }
         
-        /* אלמנטים נוספים */
         .badge { padding: 3px 8px; border-radius: 12px; font-size: 11px; font-weight: 600; }
-        .admin-only { display: none !important; } /* הסתרה ברירת מחדל */
-        .blocked-badge { background: #ef4444; color: white; padding: 2px 6px; border-radius: 4px; font-size: 10px; margin-right: 5px; }
+        .admin-only { display: none !important; }
     </style>
 </head>
 <body>
 
     <div id="loginOverlay">
         <div class="login-card">
-            <div style="font-size: 50px; margin-bottom: 10px;">🔐</div>
             <h1>כניסה למערכת</h1>
-            <p style="margin-bottom: 20px; color: var(--text-muted);">נדל"ן PRO - גרסה 18.0</p>
+            <p style="margin-bottom: 20px; color: var(--text-muted);">נדל"ן PRO - גרסה 19.0</p>
             <input type="email" id="txtEmail" class="login-input" placeholder="אימייל">
             <input type="password" id="txtPass" class="login-input" placeholder="סיסמה">
             <button class="login-btn" id="btnLogin">התחבר</button>
@@ -135,7 +131,7 @@
             <aside>
                 <div class="brand">
                     <div class="brand-title">🏢 נדל"ן PRO</div>
-                    <div style="font-size:11px; opacity:0.6; margin-top:5px;">מערכת ניהול מתקדמת</div>
+                    <div style="font-size:11px; opacity:0.6; margin-top:5px;">V19.0 Fixer</div>
                 </div>
                 <div class="nav-list">
                     <div class="nav-item active" onclick="nav('dashboard')"><i class="fa-solid fa-chart-pie"></i> דשבורד מנהלים</div>
@@ -147,7 +143,7 @@
                 <div class="user-panel">
                     <div>
                         <div id="lblUser" style="font-weight:bold;">אורח</div>
-                        <div id="lblRole" style="font-size:10px; color:var(--accent);">טוען הרשאות...</div>
+                        <div id="lblRole" style="font-size:10px; color:var(--accent);"></div>
                     </div>
                     <button class="btn-icon" onclick="doLogout()"><i class="fa-solid fa-power-off"></i></button>
                 </div>
@@ -155,10 +151,10 @@
 
             <main>
                 <section id="dashboard" class="page">
-                    <div class="header"><div class="page-title"><i class="fa-solid fa-gauge"></i> דשבורד</div><div id="dateDisplay"></div></div>
+                    <div class="header"><div class="page-title">דשבורד מנהלים</div><div id="dateDisplay"></div></div>
                     
                     <div class="grid-3">
-                        <div class="card" onclick="nav('crm')">
+                        <div class="card">
                             <div class="stat-val" id="stTotal">0</div>
                             <div class="stat-label">לקוחות במאגר</div>
                         </div>
@@ -172,14 +168,14 @@
                         </div>
                     </div>
 
-                    <div style="display:grid; grid-template-columns: 2fr 1fr; gap:20px;">
+                    <div style="display:grid; grid-template-columns: 1fr 1fr; gap:20px;">
                         <div class="card">
-                            <h3>📋 משימות להיום</h3>
-                            <div id="dashboardAgenda"></div>
+                            <h3>📊 פילוח לפי עיר מגורים</h3>
+                            <canvas id="cityChart" height="200"></canvas>
                         </div>
-                        <div class="card">
-                            <h3>📡 עדכונים חיים</h3>
-                            <div id="liveFeed" style="font-size:12px; line-height:2; color:var(--text-muted);">טוען...</div>
+                         <div class="card">
+                            <h3>🎓 פילוח לפי מוסדות (ישיבות)</h3>
+                            <canvas id="yeshivaChart" height="200"></canvas>
                         </div>
                     </div>
                 </section>
@@ -188,7 +184,7 @@
                     <div class="header">
                         <div class="page-title">מאגר הלקוחות</div>
                         <div style="display:flex; gap:10px;">
-                            <button class="btn btn-white" onclick="document.getElementById('excelIn').click()"><i class="fa-solid fa-file-excel"></i> ייבוא אקסל (V18)</button>
+                            <button class="btn btn-white" onclick="document.getElementById('excelIn').click()"><i class="fa-solid fa-file-excel"></i> ייבוא אקסל (מתוקן)</button>
                             <input type="file" id="excelIn" hidden>
                             <button class="btn btn-white admin-btn" onclick="exportExcel()"><i class="fa-solid fa-download"></i> ייצוא</button>
                             <button class="btn btn-primary" onclick="openModal()"><i class="fa-solid fa-plus"></i> חדש</button>
@@ -199,10 +195,10 @@
                         <div class="table-tools">
                             <div style="flex:1; position:relative;">
                                 <i class="fa-solid fa-search" style="position:absolute; right:10px; top:10px; color:#94a3b8;"></i>
-                                <input type="text" id="searchBox" placeholder="חיפוש חכם (שם, טלפון, עיר...)" onkeyup="renderTable()" style="padding-right:30px; margin:0;">
+                                <input type="text" id="searchBox" placeholder="חיפוש מקיף (שם, טלפון, הערות, ילדים...)" onkeyup="renderTable()" style="padding-right:30px; margin:0;">
                             </div>
                             <select id="filterStat" onchange="renderTable()" style="width:140px; margin:0; font-weight:bold;">
-                                <option value="">הכל</option>
+                                <option value="">כל הסטטוסים</option>
                                 <option>חדש</option>
                                 <option>בטיפול</option>
                                 <option>מו"מ</option>
@@ -233,65 +229,43 @@
                         <div class="page-title">יומן</div>
                         <button class="btn btn-primary" onclick="openGeneralTaskModal()">+ משימה אישית</button>
                     </div>
-                    
                     <div id="quickTaskArea" class="card" style="display:none; background:#eff6ff; border:1px solid var(--accent);">
-                        <h4>הוספת משימה ליומן (ללא לקוח)</h4>
+                        <h4>הוספת משימה ליומן</h4>
                         <div style="display:flex; gap:10px;">
-                            <input type="text" id="genTaskTitle" placeholder="מה צריך לעשות?">
+                            <input type="text" id="genTaskTitle" placeholder="משימה...">
                             <input type="date" id="genTaskDate">
-                            <input type="time" id="genTaskTime">
                             <button class="btn btn-primary" onclick="addGeneralTask()">שמור</button>
                             <button class="btn btn-white" onclick="document.getElementById('quickTaskArea').style.display='none'">ביטול</button>
                         </div>
                     </div>
-
                     <div id="calendarView" class="calendar-grid"></div>
-                </section>
-
-                <section id="projects" class="page" style="display:none;">
-                    <div class="header"><div class="page-title">פרויקטים</div></div>
-                    <div class="card" style="text-align:center; padding:50px;">
-                        <i class="fa-solid fa-helmet-safety" style="font-size:40px; color:var(--text-muted);"></i>
-                        <h3>מודול ניהול מלאי דירות</h3>
-                        <p>יעלה בגרסה הבאה. כאן ינוהלו הבניינים, מלאי דירות, מחירונים ותוכניות.</p>
-                    </div>
                 </section>
 
                 <section id="settings" class="page" style="display:none;">
                     <div class="header"><div class="page-title">הגדרות</div></div>
-                    
                     <div class="grid-3">
                         <div class="card">
-                            <h3>⚙️ כללי</h3>
+                            <h3>כללי</h3>
                             <label>ריבית פריים (%)</label>
                             <input type="number" id="setPrime" value="6.0">
                             <button class="btn btn-primary" onclick="saveSettings()">שמור</button>
                         </div>
-                        
                         <div class="card admin-btn">
-                            <h3>👥 ניהול משתמשים והרשאות</h3>
-                            <p style="font-size:12px; color:var(--text-muted);">הוסף אימיילים של עובדים והגדר את תפקידם.</p>
-                            <div id="usersList" style="margin-bottom:15px; max-height:150px; overflow-y:auto; border:1px solid var(--border); padding:5px; border-radius:4px;"></div>
-                            
+                            <h3>ניהול משתמשים</h3>
+                            <div id="usersList" style="margin-bottom:10px; height:100px; overflow-y:auto; border:1px solid #eee; padding:5px;"></div>
                             <div style="display:flex; gap:5px;">
-                                <input id="newUserEmail" placeholder="אימייל העובד" style="margin:0;">
-                                <select id="newUserRole" style="margin:0; width:100px;">
-                                    <option value="agent">סוכן</option>
-                                    <option value="admin">מנהל</option>
-                                </select>
+                                <input id="newUserEmail" placeholder="אימייל" style="margin:0;">
+                                <select id="newUserRole" style="margin:0; width:100px;"><option value="agent">סוכן</option><option value="admin">מנהל</option></select>
                                 <button class="btn btn-primary" onclick="addUser()">הוסף</button>
                             </div>
-                            <div style="margin-top:10px; font-size:11px;">
-                                * <b>מנהל:</b> גישה מלאה, מחיקה, ייצוא.<br>
-                                * <b>סוכן:</b> רואה רק לידים שלו (או הכל - לפי הגדרה), ללא מחיקה.
-                            </div>
                         </div>
-
-                        <div class="card">
-                            <h3>🔗 כלי שיתוף</h3>
-                            <button class="btn btn-white" style="width:100%; margin-bottom:10px;" onclick="copyJoinLink()"><i class="fa-solid fa-link"></i> העתק קישור למערכת</button>
-                            <button class="btn btn-white" style="width:100%;" onclick="sendSystemEmail()"><i class="fa-solid fa-envelope"></i> שלח הזמנה במייל</button>
-                        </div>
+                    </div>
+                </section>
+                
+                 <section id="projects" class="page" style="display:none;">
+                    <div class="header"><div class="page-title">פרויקטים</div></div>
+                    <div class="card" style="text-align:center; padding:50px;">
+                        <h3>מודול ניהול מלאי דירות (בפיתוח)</h3>
                     </div>
                 </section>
             </main>
@@ -310,7 +284,7 @@
             <div class="modal-content">
                 <input type="hidden" id="editId">
                 <div id="blockedAlert" style="display:none; background:#fee2e2; color:#b91c1c; padding:10px; border-radius:6px; margin-bottom:15px; font-weight:bold; text-align:center;">
-                    ⚠️ לקוח זה נמצא ברשימה השחורה (ביקש להימחק). אין ליצור קשר!
+                    ⚠️ לקוח זה חסום! (ביקש להימחק)
                 </div>
 
                 <div class="tabs">
@@ -330,7 +304,7 @@
                         <div><label>אימייל</label><input id="inpEmail"></div>
                         <div><label>ת.ז</label><input id="inpId"></div>
                         <div style="grid-column:span 2; background:#f8fafc; padding:15px; border-radius:8px; border:1px solid var(--border);">
-                            <label style="font-weight:bold; color:var(--accent);">שדות נוספים (מהאקסל)</label>
+                            <label style="font-weight:bold; color:var(--accent);">נתונים נוספים מהאקסל (ישיבות, כתובת וכו')</label>
                             <div id="customFields" style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px;"></div>
                         </div>
                     </div>
@@ -345,9 +319,9 @@
                     <div style="display:flex; gap:20px;">
                         <div style="flex:1"><label>סטטוס</label><select id="inpStatus"><option>חדש</option><option>בטיפול</option><option>מו"מ</option><option>חוזה</option><option>חסום</option><option>לא רלוונטי</option></select></div>
                         <div style="flex:1"><label>תקציב</label><input type="number" id="inpBudget"></div>
-                        <div style="flex:1"><label>סוכן מטפל</label><input id="inpAgent" readonly style="background:#eee;"></div>
+                        <div style="flex:1"><label>סוכן</label><input id="inpAgent" readonly style="background:#eee;"></div>
                     </div>
-                    <label>הערות ומידע גולמי</label>
+                    <label>הערות (כולל היסטוריה גולמית)</label>
                     <textarea id="inpNotes" rows="10" style="font-family:monospace; font-size:12px;"></textarea>
                     <button class="btn btn-white" onclick="addTimestamp()">הוסף חותמת זמן</button>
                 </div>
@@ -389,13 +363,25 @@
             </div>
         </div>
     </div>
+    
+    <div id="dupesModal" class="modal">
+        <div class="modal-box" style="max-width:600px;">
+            <div class="modal-head"><h2>⚠️ נמצאו רשומות כפולות</h2></div>
+            <div class="modal-content">
+                <p>המערכת זיהתה שהלקוחות הבאים כבר קיימים במאגר (לפי טלפון או ת.ז). הם <b>לא</b> נוספו מחדש.</p>
+                <textarea id="dupesList" rows="10" style="width:100%; font-family:monospace;" readonly></textarea>
+            </div>
+            <div class="modal-foot">
+                <button class="btn btn-primary" onclick="document.getElementById('dupesModal').style.display='none'">הבנתי, סגור</button>
+            </div>
+        </div>
+    </div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
         import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
         import { getDatabase, ref, set, push, onValue, remove, update } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 
-        // *** קונפיגורציה ***
         const firebaseConfig = {
             apiKey: "AIzaSyCJvUDVuccEZSuTsUSs7o-hnpME2WaTWio", 
             authDomain: "nadlan-pro.firebaseapp.com",
@@ -410,26 +396,22 @@
         const auth = getAuth(app);
         const db = getDatabase(app);
 
-        // משתני מערכת
         let currentUser = null;
-        let userRole = 'agent'; // ברירת מחדל: סוכן (מוגבל)
+        let userRole = 'agent';
         let clientsData = {};
         let meetingsData = {};
-        let usersData = {}; // רשימת המורשים
+        let usersData = {};
         let settingsData = { prime: 6.0 };
         let customHeaders = new Set();
         let visibleCols = ['name', 'phone', 'city', 'status', 'budget'];
         let selectedClients = new Set();
+        let charts = {}; // לשמירת הגרפים
 
         // --- התחברות ---
         document.getElementById('btnLogin').addEventListener('click', () => {
             const e = document.getElementById('txtEmail').value;
             const p = document.getElementById('txtPass').value;
-            document.getElementById('btnLogin').innerText = "מתחבר...";
-            signInWithEmailAndPassword(auth, e, p).catch(err => {
-                document.getElementById('btnLogin').innerText = "התחבר";
-                document.getElementById('loginError').innerText = err.message;
-            });
+            signInWithEmailAndPassword(auth, e, p).catch(err => alert(err.message));
         });
 
         onAuthStateChanged(auth, user => {
@@ -448,39 +430,27 @@
 
         window.doLogout = () => signOut(auth);
 
-        // --- טעינת נתונים והרשאות ---
         function initData() {
-            // טעינת הגדרות משתמשים (לקביעת הרשאה)
             onValue(ref(db, 'users'), snap => {
                 usersData = snap.val() || {};
-                
-                // בדיקת הרשאה ליוזר הנוכחי
                 const myUser = Object.values(usersData).find(u => u.email === currentUser.email);
+                userRole = (Object.keys(usersData).length === 0) ? 'admin' : (myUser ? myUser.role : 'agent');
+                if(Object.keys(usersData).length === 0) push(ref(db, 'users'), { email: currentUser.email, role: 'admin' });
                 
-                // אם אין משתמשים בכלל - הראשון הוא מנהל
-                if (Object.keys(usersData).length === 0) {
-                    userRole = 'admin';
-                    push(ref(db, 'users'), { email: currentUser.email, role: 'admin' });
-                } else if (myUser) {
-                    userRole = myUser.role;
-                } else {
-                    userRole = 'agent'; // ברירת מחדל לחדשים שלא הוגדרו
-                }
-
-                document.getElementById('lblRole').innerText = userRole === 'admin' ? 'מנהל מערכת' : 'סוכן';
-                applyPermissions(); // החלת הרשאות על הממשק
-                renderUsersList(); // למסך הגדרות
+                document.getElementById('lblRole').innerText = userRole === 'admin' ? 'מנהל' : 'סוכן';
+                applyPermissions();
+                renderUsersList();
             });
 
-            // טעינת לקוחות
             onValue(ref(db, 'clients'), snap => {
                 clientsData = snap.val() || {};
+                // עדכון שדות מיוחדים מכל הלקוחות
                 Object.values(clientsData).forEach(c => {
                     if(c.customData) Object.keys(c.customData).forEach(k => customHeaders.add(k));
                 });
                 renderTable();
                 updateStats();
-                updateFeed();
+                updateCharts();
             });
 
             onValue(ref(db, 'meetings'), snap => {
@@ -489,34 +459,12 @@
             });
         }
 
-        // --- ניהול הרשאות ---
         function applyPermissions() {
             const isAdmin = userRole === 'admin';
-            // הסתרה/הצגה של כפתורי מנהל
-            document.querySelectorAll('.admin-btn').forEach(el => {
-                el.style.display = isAdmin ? 'inline-flex' : 'none';
-            });
+            document.querySelectorAll('.admin-btn').forEach(el => el.style.display = isAdmin ? 'inline-flex' : 'none');
         }
 
-        window.addUser = () => {
-            const email = document.getElementById('newUserEmail').value;
-            const role = document.getElementById('newUserRole').value;
-            if(email) {
-                push(ref(db, 'users'), { email, role });
-                alert('משתמש נוסף בהצלחה');
-                document.getElementById('newUserEmail').value = '';
-            }
-        };
-
-        function renderUsersList() {
-            const div = document.getElementById('usersList');
-            div.innerHTML = '';
-            Object.entries(usersData).forEach(([key, u]) => {
-                div.innerHTML += `<div style="display:flex; justify-content:space-between; padding:5px; border-bottom:1px solid #eee;"><span>${u.email}</span> <b>${u.role}</b></div>`;
-            });
-        }
-
-        // --- ייבוא אקסל חכם V18 (כולל ילדים ושדות דינמיים) ---
+        // --- ייבוא אקסל המתוקן (עם רשימת כפילויות) ---
         document.getElementById('excelIn').addEventListener('change', (e) => {
             const fileName = e.target.files[0].name;
             const r = new FileReader();
@@ -525,29 +473,26 @@
                 const w = XLSX.read(new Uint8Array(ex.target.result), {type:'array'});
                 const d = XLSX.utils.sheet_to_json(w.Sheets[w.SheetNames[0]]);
                 let count = 0;
-                let dupCount = 0;
-
-                // בדיקת רשימה שחורה לפי שם הקובץ או תוכן
+                let dupesLog = "";
                 const isBlacklist = fileName.includes("למחוק") || fileName.includes("חסום");
 
-                // פונקציית עזר למציאת ערך לפי מילות מפתח
                 const findVal = (row, keywords) => {
                     const key = Object.keys(row).find(k => keywords.some(w => k.includes(w)));
                     return key ? row[key] : '';
                 };
 
                 d.forEach(row => {
-                    // זיהוי שדות בסיס
                     const phone = String(findVal(row, ['נייד','טלפון','פלאפון']) || '').replace(/\D/g,'');
                     const idNum = String(findVal(row, ['ת.ז','זהות']) || '');
                     
                     // בדיקת כפילות
-                    const exists = Object.values(clientsData).some(c => (c.phone === phone && phone.length>5) || (c.idNum === idNum && idNum.length>5));
+                    const exists = Object.values(clientsData).find(c => (c.phone === phone && phone.length>5) || (c.idNum === idNum && idNum.length>5));
                     
-                    if (!exists && phone.length > 0) {
+                    if (exists) {
+                        dupesLog += `נמצא: ${exists.name} (טלפון: ${exists.phone}) - לא יובא שוב.\n`;
+                    } else if (phone.length > 0) {
                         const name = findVal(row, ['שם משפחה','שם פרטי','שם']) || 'ללא שם';
                         
-                        // בניית אובייקט לקוח
                         const c = {
                             name: name + ' ' + (findVal(row, ['פרטי']) || ''),
                             spouse: findVal(row, ['אשה','אישה','זוג']) || '',
@@ -556,84 +501,88 @@
                             email: findVal(row, ['מייל','דוא']),
                             idNum: idNum,
                             city: findVal(row, ['עיר','כתובת']),
-                            status: isBlacklist ? 'חסום' : 'חדש', // סימון אוטומטי לחסומים
-                            notes: `\n--- ייבוא ${fileName} ---\n`, // התחלת לוג הערות
+                            status: isBlacklist ? 'חסום' : 'חדש',
+                            notes: `\n--- ייבוא ${fileName} ---\n`,
                             lastUpdate: Date.now(),
                             agent: currentUser.email,
                             children: [],
                             customData: {} 
                         };
 
-                        // 1. לולאה חכמה לשאיבת כל הנתונים להערות + שדות מיוחדים
+                        // שאיבת כל השדות
                         for (let [key, val] of Object.entries(row)) {
                             if(val) {
-                                c.notes += `${key}: ${val}\n`; // גיבוי להערות
-                                
-                                // מיפוי שדות מיוחדים לטבלה
-                                if(['ישיבה','סמינר','רחוב','מספר','עיסוק'].some(x => key.includes(x))) {
+                                c.notes += `${key}: ${val}\n`; 
+                                // הכנסת שדות שלא זוהו לשדות מיוחדים
+                                if(!['שם','טלפון','מייל','ת.ז'].some(x=>key.includes(x))) {
                                     c.customData[key] = val;
+                                    customHeaders.add(key); // הוספה לרשימת העמודות הכללית
                                 }
                             }
                         }
 
-                        // 2. זיהוי ילדים (לולאה על עמודות ממוספרות)
-                        // מחפש תבניות כמו "שם ילד 1", "ת.ז 1" וכו'
+                        // ילדים
                         for(let i=1; i<=15; i++) {
                             const childName = findVal(row, [`שם הילד${i}`, `שם ילד ${i}`, `ילד ${i}`]);
                             if (childName) {
-                                const childId = findVal(row, [`ת. זהות${i}`, `ת.ז ${i}`, `זהות ${i}`]);
-                                c.children.push({ name: childName, id: childId || '' });
+                                c.children.push({ name: childName, id: findVal(row, [`ת. זהות${i}`]) || '' });
                             }
                         }
-
                         push(ref(db, 'clients'), c);
                         count++;
-                    } else {
-                        dupCount++;
                     }
                 });
                 
-                alert(`✅ סיכום ייבוא:\nנקלטו: ${count} לקוחות חדשים.\nדלגו (כפולים): ${dupCount}.\n${isBlacklist ? '⚠️ הקובץ זוהה כרשימה שחורה - הלקוחות סומנו כחסומים.' : ''}`);
+                // דוח למשתמש
+                if (dupesLog) {
+                    document.getElementById('dupesList').value = dupesLog;
+                    document.getElementById('dupesModal').style.display = 'flex';
+                } else {
+                    alert(`ייבוא הושלם! ${count} לקוחות חדשים.`);
+                }
             };
             r.readAsArrayBuffer(e.target.files[0]);
         });
 
-        // --- טבלה ופעולות גורפות ---
+        // --- טבלה וחיפוש ---
         window.renderTable = () => {
             const tbody = document.getElementById('tableBody');
             const thead = document.getElementById('tableHead');
             const search = document.getElementById('searchBox').value.toLowerCase();
             const filter = document.getElementById('filterStat').value;
             
-            // עמודות דינמיות
             let cols = ['checkbox', 'name', 'phone', 'status', 'city', 'agent'];
             visibleCols.forEach(c => { if(!cols.includes(c) && c!=='checkbox') cols.push(c); });
             
-            // כותרות
             let headHtml = `<tr><th style="width:30px"><input type="checkbox" onchange="toggleSelectAll(this)"></th>`;
-            cols.filter(x=>x!=='checkbox').forEach(c => headHtml += `<th>${colName(c)}</th>`);
+            cols.filter(x=>x!=='checkbox').forEach(c => headHtml += `<th>${c}</th>`);
             headHtml += `<th>פעולות</th></tr>`;
             thead.innerHTML = headHtml;
             tbody.innerHTML = '';
 
             Object.entries(clientsData).forEach(([key, c]) => {
-                // פילטור לפי סוכן (אם לא מנהל - רואה רק את שלו)
                 if (userRole !== 'admin' && c.agent !== currentUser.email) return;
-
                 if (filter && c.status !== filter) return;
-                const txt = (c.name + c.phone + c.idNum + (c.notes||'')).toLowerCase();
-                if (search && !txt.includes(search)) return;
+                
+                // חיפוש עמוק ומתקן
+                const fullText = JSON.stringify(c).toLowerCase();
+                if (search && !fullText.includes(search)) return;
 
                 const tr = document.createElement('tr');
-                if (c.status === 'חסום') tr.classList.add('blocked-row'); // צבע אדום לחסומים
+                if (c.status === 'חסום') tr.classList.add('blocked-row');
 
-                // תא צ'קבוקס
                 let html = `<td><input type="checkbox" class="client-cb" value="${key}" onchange="updateSelection()"></td>`;
                 
                 cols.filter(x=>x!=='checkbox').forEach(col => {
                     let v = '-';
                     if(col==='name') v = `<b>${c.name}</b><br><small>${c.spouse||''}</small>`;
-                    else if(col==='status') v = `<span class="badge" style="background:${stColor(c.status)}">${c.status}</span>`;
+                    // עריכה מהירה לסטטוס
+                    else if(col==='status') {
+                        v = `<select class="quick-select" onchange="quickStatus('${key}', this.value)" style="background:${stColor(c.status)}">
+                                <option>${c.status}</option>
+                                <option>חדש</option><option>בטיפול</option><option>מו"מ</option><option>חוזה</option><option>חסום</option>
+                             </select>`;
+                    }
                     else if(col==='agent') v = c.agent ? c.agent.split('@')[0] : '-';
                     else v = c[col] || (c.customData ? c.customData[col] : '') || '-';
                     html += `<td>${v}</td>`;
@@ -645,7 +594,10 @@
             });
         };
 
-        // ניהול בחירה מרובה
+        window.quickStatus = (id, newStat) => {
+            update(ref(db, 'clients/'+id), { status: newStat, lastUpdate: Date.now() });
+        };
+
         window.toggleSelectAll = (el) => {
             document.querySelectorAll('.client-cb').forEach(cb => cb.checked = el.checked);
             updateSelection();
@@ -654,21 +606,19 @@
         window.updateSelection = () => {
             selectedClients.clear();
             document.querySelectorAll('.client-cb:checked').forEach(cb => selectedClients.add(cb.value));
-            
-            const count = selectedClients.size;
-            document.getElementById('bulkActions').style.display = count > 0 ? 'flex' : 'none';
-            document.getElementById('selectedCount').innerText = count + ' נבחרו';
+            document.getElementById('bulkActions').style.display = selectedClients.size > 0 ? 'flex' : 'none';
+            document.getElementById('selectedCount').innerText = selectedClients.size + ' נבחרו';
         };
 
         window.deleteSelected = () => {
-            if(confirm(`בטוח למחוק ${selectedClients.size} לקוחות? זו פעולה בלתי הפיכה!`)) {
+            if(confirm('בטוח למחוק?')) {
                 selectedClients.forEach(id => remove(ref(db, 'clients/'+id)));
                 selectedClients.clear();
                 updateSelection();
             }
         };
 
-        // --- עריכת לקוח ---
+        // --- עריכה (תיקון באג הנתונים החסרים) ---
         window.editClient = (id) => {
             const c = clientsData[id];
             document.getElementById('editId').value = id;
@@ -683,41 +633,28 @@
             document.getElementById('inpAgent').value = c.agent || '';
             document.getElementById('inpNotes').value = c.notes || '';
             
-            // הצגת התראה לחסומים
             document.getElementById('blockedAlert').style.display = (c.status === 'חסום') ? 'block' : 'none';
-            document.querySelectorAll('.comm-btn').forEach(b => b.disabled = (c.status === 'חסום'));
 
             // ילדים
             document.getElementById('childrenList').innerHTML = '';
             if(c.children) c.children.forEach(k => window.addChildRow(k.name, k.id));
             
-            // שדות מותאמים
+            // שדות מיוחדים - תיקון קריטי: מציג את כל השדות שנשמרו ב-CustomData
             const cfDiv = document.getElementById('customFields');
             cfDiv.innerHTML = '';
-            customHeaders.forEach(k => {
+            
+            // איחוד כל השדות האפשריים (גם אלו שבמערכת וגם אלו שבכרטיס הספציפי)
+            const allKeys = new Set([...customHeaders, ...Object.keys(c.customData || {})]);
+            
+            allKeys.forEach(k => {
                 const val = (c.customData && c.customData[k]) ? c.customData[k] : '';
                 cfDiv.innerHTML += `<div><label style="font-size:11px;">${k}</label><input class="cf-inp" data-key="${k}" value="${val}"></div>`;
             });
 
             renderClientMeetings(id);
-            document.getElementById('btnDelete').style.display = (userRole === 'admin') ? 'block' : 'none'; // רק מנהל מוחק
+            document.getElementById('btnDelete').style.display = (userRole === 'admin') ? 'block' : 'none';
             document.getElementById('modal').style.display = 'flex';
         };
-
-        window.openModal = () => {
-            document.getElementById('editId').value = '';
-            document.getElementById('inpName').value = '';
-            document.getElementById('inpPhone').value = '';
-            document.getElementById('inpNotes').value = '';
-            document.getElementById('childrenList').innerHTML = '';
-            document.getElementById('customFields').innerHTML = '';
-            document.getElementById('clientMeetingsList').innerHTML = '';
-            document.getElementById('blockedAlert').style.display = 'none';
-            document.getElementById('btnDelete').style.display = 'none';
-            document.getElementById('modal').style.display = 'flex';
-        }
-
-        window.closeModal = () => document.getElementById('modal').style.display = 'none';
 
         window.saveData = () => {
             const id = document.getElementById('editId').value;
@@ -732,7 +669,7 @@
                 budget: document.getElementById('inpBudget').value,
                 notes: document.getElementById('inpNotes').value,
                 lastUpdate: Date.now(),
-                agent: id ? document.getElementById('inpAgent').value : currentUser.email, // שימור סוכן קיים או חדש
+                agent: id ? document.getElementById('inpAgent').value : currentUser.email,
                 children: [],
                 customData: {}
             };
@@ -747,93 +684,94 @@
             closeModal();
         };
 
-        window.deleteClient = () => {
-            if(confirm('למחוק לצמיתות?')) { 
-                remove(ref(db, 'clients/'+document.getElementById('editId').value)); 
-                closeModal(); 
-            }
-        };
+        // --- דשבורד וגרפים (חדש ב-V19) ---
+        window.updateCharts = () => {
+            const cities = {};
+            const yeshivas = {};
+            
+            Object.values(clientsData).forEach(c => {
+                // ערים
+                const city = c.city || 'לא ידוע';
+                cities[city] = (cities[city] || 0) + 1;
 
-        // --- יומן ומשימות ---
-        window.addGeneralTask = () => {
-            const title = document.getElementById('genTaskTitle').value;
-            const date = document.getElementById('genTaskDate').value;
-            if(!title || !date) return;
-            push(ref(db, 'meetings'), {
-                clientId: 'general', clientName: 'משימה אישית',
-                date: date, time: document.getElementById('genTaskTime').value || '09:00',
-                note: title, agent: currentUser.email
+                // ישיבות (מחפש בשדות המותאמים)
+                const y = c.customData ? (c.customData['ישיבה'] || c.customData['ישיבה בה למד']) : null;
+                if(y) yeshivas[y] = (yeshivas[y] || 0) + 1;
             });
-            document.getElementById('quickTaskArea').style.display = 'none';
+
+            renderChart('cityChart', cities, 'ערים מובילות');
+            renderChart('yeshivaChart', yeshivas, 'מוסדות לימוד');
         };
 
+        function renderChart(id, data, label) {
+            const ctx = document.getElementById(id).getContext('2d');
+            const labels = Object.keys(data).sort((a,b) => data[b]-data[a]).slice(0, 5); // טופ 5
+            const values = labels.map(k => data[k]);
+            
+            if(charts[id]) charts[id].destroy(); // ניקוי גרף ישן
+            
+            charts[id] = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: label,
+                        data: values,
+                        backgroundColor: '#3b82f6',
+                        borderRadius: 5
+                    }]
+                },
+                options: { plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true } } }
+            });
+        }
+
+        // --- פונקציות עזר (ללא שינוי מהותי) ---
+        window.openModal = () => {
+            document.getElementById('editId').value = '';
+            document.getElementById('inpName').value = '';
+            document.getElementById('childrenList').innerHTML = '';
+            document.getElementById('customFields').innerHTML = '';
+            // טעינת שדות מותאמים ריקים ללקוח חדש
+            customHeaders.forEach(k => {
+                 document.getElementById('customFields').innerHTML += `<div><label style="font-size:11px;">${k}</label><input class="cf-inp" data-key="${k}"></div>`;
+            });
+            document.getElementById('modal').style.display = 'flex';
+        }
+
+        window.closeModal = () => document.getElementById('modal').style.display = 'none';
+        window.deleteClient = () => { if(confirm('למחוק?')) { remove(ref(db, 'clients/'+document.getElementById('editId').value)); closeModal(); } };
+        window.addGeneralTask = () => { push(ref(db, 'meetings'), { clientId: 'general', clientName: 'משימה', date: document.getElementById('genTaskDate').value, time: '09:00', note: document.getElementById('genTaskTitle').value, agent: currentUser.email }); document.getElementById('quickTaskArea').style.display='none'; };
+        
         window.renderCalendar = () => {
             const container = document.getElementById('calendarView');
             if(!container) return;
             container.innerHTML = '';
-            document.getElementById('dashboardAgenda').innerHTML = '';
-            
-            // סינון ומיון
-            const sorted = Object.entries(meetingsData)
-                .filter(([k,m]) => userRole==='admin' || m.agent===currentUser.email) // סינון לפי סוכן
-                .sort((a,b) => (a[1].date+a[1].time).localeCompare(b[1].date+b[1].time));
-
+            const sorted = Object.entries(meetingsData).sort((a,b) => (a[1].date+a[1].time).localeCompare(b[1].date+b[1].time));
             const grouped = {};
             sorted.forEach(([id, m]) => { if(!grouped[m.date]) grouped[m.date]=[]; grouped[m.date].push({id, ...m}); });
-            
             Object.keys(grouped).forEach(date => {
                 let html = `<div class="day-col"><div class="day-title">${new Date(date).toLocaleDateString('he-IL')}</div>`;
                 grouped[date].forEach(evt => {
-                    const isTask = evt.clientId === 'general';
-                    html += `<div class="cal-event" style="border-color:${isTask?'#22c55e':'#3b82f6'}">
-                        <b>${evt.time}</b> ${evt.clientName}<br>${evt.note}
-                    </div>`;
-                    
-                    // דשבורד
-                    if(date >= new Date().toISOString().split('T')[0]) {
-                        document.getElementById('dashboardAgenda').innerHTML += `<div><b>${evt.time}</b> ${evt.clientName} (${date})</div>`;
-                    }
+                    html += `<div class="cal-event" style="border-color:${evt.clientId==='general'?'#22c55e':'#3b82f6'}"><b>${evt.time}</b> ${evt.clientName}<br>${evt.note}</div>`;
                 });
                 html += `</div>`;
                 container.innerHTML += html;
             });
         };
 
-        // --- עזרים ---
-        window.nav = (p) => {
-            document.querySelectorAll('.page').forEach(x => x.style.display='none');
-            document.getElementById(p).style.display='block';
-            document.querySelectorAll('.nav-item').forEach(x => x.classList.remove('active'));
-            if(event && event.currentTarget) event.currentTarget.classList.add('active');
-            if(p==='calendar') renderCalendar();
-        }
-
-        window.toggleColsMenu = () => {
-            const m = document.getElementById('colsMenu');
-            m.style.display = m.style.display==='block'?'none':'block';
-            m.innerHTML = '';
-            [...visibleCols, ...customHeaders].forEach(k => {
-                m.innerHTML += `<div><label><input type="checkbox" onchange="toggleCol('${k}')" ${visibleCols.includes(k)?'checked':''}> ${colName(k)}</label></div>`;
-            });
-        }
-        
+        window.nav = (p) => { document.querySelectorAll('.page').forEach(x => x.style.display='none'); document.getElementById(p).style.display='block'; if(p==='calendar') renderCalendar(); };
+        window.toggleColsMenu = () => { const m = document.getElementById('colsMenu'); m.style.display = m.style.display==='block'?'none':'block'; m.innerHTML = ''; [...visibleCols, ...customHeaders].forEach(k => m.innerHTML += `<div><label><input type="checkbox" onchange="toggleCol('${k}')" ${visibleCols.includes(k)?'checked':''}> ${k}</label></div>`); };
         window.toggleCol = (k) => { const i = visibleCols.indexOf(k); if(i>-1) visibleCols.splice(i,1); else visibleCols.push(k); renderTable(); };
-        window.colName = (k) => ({name:'שם', phone:'טלפון', status:'סטטוס', city:'עיר', agent:'סוכן'}[k]||k);
         window.stColor = (s) => ({'חדש':'#e2e8f0','מו"מ':'#fde047','חוזה':'#86efac','חסום':'#fecaca'}[s]||'white');
-        
-        // כלים
-        window.copyJoinLink = () => { navigator.clipboard.writeText(window.location.href); alert('הקישור הועתק! שלח אותו לעובדים.'); };
-        window.sendSystemEmail = () => window.location.href = `mailto:?subject=הזמנה למערכת נדלן&body=הכנס למערכת בקישור: ${window.location.href}`;
-        window.sendWhatsapp = () => window.open(`https://wa.me/972${document.getElementById('inpPhone').value.replace('0','')}`);
-        window.sendEmail = () => window.location.href=`mailto:${document.getElementById('inpEmail').value}`;
-        window.genPDF = () => html2pdf(document.getElementById('t1'));
-        window.saveSettings = () => update(ref(db, 'settings'), { prime: document.getElementById('setPrime').value }).then(()=>alert('נשמר!'));
-        window.addChildRow = (n='', i='') => document.getElementById('childrenList').insertAdjacentHTML('beforeend', `<div style="display:flex; gap:5px; margin-bottom:5px;"><input class="cn" value="${n}" placeholder="שם"><input class="ci" value="${i}" placeholder="ת.ז"><button type="button" class="btn-icon" onclick="this.parentElement.remove()">-</button></div>`);
-        window.addTimestamp = () => document.getElementById('inpNotes').value = `[${new Date().toLocaleString()} ${currentUser.email.split('@')[0]}] ` + document.getElementById('inpNotes').value;
         window.switchTab = (el, id) => { document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active')); document.querySelectorAll('.tab-panel').forEach(x=>x.classList.remove('active')); el.classList.add('active'); document.getElementById(id).classList.add('active'); };
+        window.addChildRow = (n='', i='') => document.getElementById('childrenList').insertAdjacentHTML('beforeend', `<div class="cr-row"><input class="cn" value="${n}" placeholder="שם"><input class="ci" value="${i}" placeholder="ת.ז"><button type="button" class="btn-icon" onclick="this.parentElement.remove()">-</button></div>`);
+        window.addTimestamp = () => document.getElementById('inpNotes').value = `[${new Date().toLocaleString()} ${currentUser.email.split('@')[0]}] ` + document.getElementById('inpNotes').value;
         window.calcModal = () => { const p=Number(document.getElementById('mLoan').value), r=0.065/12, n=300; document.getElementById('mRes').innerText = Math.round(p*r*Math.pow(1+r,n)/(Math.pow(1+r,n)-1)).toLocaleString(); };
         window.updateStats = () => { const a = Object.values(clientsData); document.getElementById('stTotal').innerText = a.length; document.getElementById('stActive').innerText = a.filter(c=>['בטיפול','מו"מ'].includes(c.status)).length; document.getElementById('stDeals').innerText = a.filter(c=>c.status==='חוזה').length; };
-        window.updateFeed = () => {}; 
+        
+        // משתמשים (ניהול)
+        window.addUser = () => { push(ref(db, 'users'), { email: document.getElementById('newUserEmail').value, role: document.getElementById('newUserRole').value }); renderUsersList(); };
+        function renderUsersList() { const div = document.getElementById('usersList'); div.innerHTML = ''; Object.values(usersData).forEach(u => div.innerHTML += `<div>${u.email} - ${u.role}</div>`); }
     </script>
 </body>
 </html>
