@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>נדל"ן PRO 17.5 - המערכת המלאה (Safe Mode)</title>
+    <title>נדל"ן PRO 18.0 - מערכת ניהול מלאה</title>
     
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
@@ -12,474 +12,121 @@
     <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@300;400;500;700;900&display=swap" rel="stylesheet">
     
     <style>
-        /* --- עיצוב גלובלי ומורחב --- */
+        /* --- עיצוב גלובלי (מורחב) --- */
         :root {
-            --primary: #0f172a; 
-            --primary-hover: #1e293b;
-            --accent: #2563eb; 
-            --accent-hover: #1d4ed8;
-            --bg: #f1f5f9; 
-            --surface: #ffffff; 
-            --border: #cbd5e1; 
-            --text: #0f172a; 
-            --text-muted: #64748b;
-            --danger: #ef4444; 
-            --success: #22c55e; 
-            --warning: #f59e0b;
-            --radius: 12px; 
-            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-            --header-height: 70px;
+            --primary: #1e293b; --primary-light: #334155;
+            --accent: #3b82f6; --accent-hover: #2563eb;
+            --bg: #f8fafc; --surface: #ffffff; 
+            --border: #e2e8f0; --text: #0f172a; --text-muted: #64748b;
+            --danger: #ef4444; --success: #22c55e; --warning: #f59e0b;
+            --radius: 8px; --shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
         }
 
         [data-theme="dark"] {
-            --primary: #020617; 
-            --primary-hover: #1e293b;
-            --accent: #60a5fa; 
-            --accent-hover: #3b82f6;
-            --bg: #0f172a; 
-            --surface: #1e293b; 
-            --border: #334155;
-            --text: #f8fafc; 
-            --text-muted: #94a3b8;
+            --primary: #020617; --primary-light: #1e293b;
+            --accent: #60a5fa; --accent-hover: #3b82f6;
+            --bg: #0f172a; --surface: #1e293b; --border: #334155;
+            --text: #f8fafc; --text-muted: #94a3b8;
             --shadow: 0 10px 15px -3px rgba(0,0,0,0.5);
         }
 
-        * { 
-            box-sizing: border-box; 
-            margin: 0; 
-            padding: 0; 
-            font-family: 'Rubik', sans-serif; 
-            outline: none; 
-            transition: all 0.2s ease-in-out; 
-        }
-
-        body { 
-            background: var(--bg); 
-            color: var(--text); 
-            height: 100vh; 
-            overflow: hidden; 
-            display: flex; 
-            flex-direction: column; 
-        }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Rubik', sans-serif; outline: none; transition: all 0.2s; }
+        body { background: var(--bg); color: var(--text); height: 100vh; overflow: hidden; display: flex; flex-direction: column; }
 
         /* מסך כניסה */
-        #loginOverlay { 
-            position: fixed; 
-            inset: 0; 
-            background: linear-gradient(135deg, var(--primary) 0%, #000 100%); 
-            z-index: 10000; 
-            display: flex; 
-            justify-content: center; 
-            align-items: center; 
-        }
-        
-        .login-card { 
-            background: white; 
-            padding: 40px; 
-            border-radius: 20px; 
-            width: 100%; 
-            max-width: 400px; 
-            text-align: center; 
-            box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25); 
-        }
-        
-        .login-input { 
-            width: 100%; 
-            padding: 14px; 
-            margin-bottom: 15px; 
-            border: 1px solid #cbd5e1; 
-            border-radius: 8px; 
-            font-size: 16px; 
-            background: #f8fafc; 
-        }
-        
-        .login-btn { 
-            width: 100%; 
-            padding: 14px; 
-            background: var(--accent); 
-            color: white; 
-            border: none; 
-            border-radius: 8px; 
-            font-size: 16px; 
-            font-weight: bold; 
-            cursor: pointer; 
-        }
-        
-        .login-btn:hover { 
-            background: var(--accent-hover); 
-            transform: translateY(-2px); 
-        }
+        #loginOverlay { position: fixed; inset: 0; background: linear-gradient(135deg, var(--primary) 0%, #000 100%); z-index: 10000; display: flex; justify-content: center; align-items: center; }
+        .login-card { background: white; padding: 40px; border-radius: 16px; width: 100%; max-width: 380px; text-align: center; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25); }
+        .login-input { width: 100%; padding: 12px; margin-bottom: 15px; border: 1px solid var(--border); border-radius: 6px; font-size: 15px; }
+        .login-btn { width: 100%; padding: 12px; background: var(--accent); color: white; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; }
+        .login-btn:hover { background: var(--accent-hover); }
 
         /* מבנה ראשי */
         #mainApp { display: none; height: 100%; width: 100%; }
         .layout-container { display: flex; height: 100%; }
 
         /* סרגל צד */
-        aside { 
-            width: 280px; 
-            background: var(--primary); 
-            color: white; 
-            display: flex; 
-            flex-direction: column; 
-            z-index: 50; 
-            box-shadow: 5px 0 25px rgba(0,0,0,0.15); 
-        }
-        
-        .brand { 
-            padding: 30px; 
-            text-align: center; 
-            background: rgba(255,255,255,0.03); 
-            border-bottom: 1px solid rgba(255,255,255,0.1); 
-        }
-        
-        .brand-title { 
-            font-size: 26px; 
-            font-weight: 900; 
-            letter-spacing: 1px; 
-            color: white; 
-        }
-        
-        .nav-list { flex: 1; padding: 20px; overflow-y: auto; }
-        
-        .nav-item { 
-            padding: 16px 20px; 
-            border-radius: var(--radius); 
-            cursor: pointer; 
-            display: flex; 
-            align-items: center; 
-            gap: 15px; 
-            color: #94a3b8; 
-            margin-bottom: 10px; 
-            font-weight: 500; 
-            font-size: 15px;
-        }
-        
-        .nav-item:hover { 
-            background: rgba(255,255,255,0.1); 
-            color: white; 
-            transform: translateX(5px); 
-        }
-        
-        .nav-item.active { 
-            background: var(--accent); 
-            color: white; 
-            font-weight: 700; 
-            box-shadow: 0 0 20px rgba(37, 99, 235, 0.4); 
-        }
-        
-        .user-panel { 
-            padding: 20px; 
-            background: rgba(0,0,0,0.2); 
-            border-top: 1px solid rgba(255,255,255,0.1); 
-            display: flex; 
-            justify-content: space-between; 
-            align-items: center; 
-        }
+        aside { width: 260px; background: var(--primary); color: white; display: flex; flex-direction: column; z-index: 50; box-shadow: 4px 0 15px rgba(0,0,0,0.1); }
+        .brand { padding: 25px; text-align: center; border-bottom: 1px solid rgba(255,255,255,0.1); }
+        .brand-title { font-size: 22px; font-weight: 800; letter-spacing: 1px; }
+        .nav-list { flex: 1; padding: 15px; overflow-y: auto; }
+        .nav-item { padding: 12px 15px; border-radius: var(--radius); cursor: pointer; display: flex; align-items: center; gap: 12px; color: #94a3b8; margin-bottom: 5px; font-size: 14px; font-weight: 500; }
+        .nav-item:hover { background: rgba(255,255,255,0.05); color: white; }
+        .nav-item.active { background: var(--accent); color: white; font-weight: 700; }
+        .user-panel { padding: 20px; background: rgba(0,0,0,0.2); display: flex; justify-content: space-between; align-items: center; font-size: 13px; }
 
         /* תוכן */
-        main { 
-            flex: 1; 
-            padding: 30px; 
-            overflow-y: auto; 
-            position: relative; 
-            background: var(--bg); 
-        }
-        
-        .header { 
-            display: flex; 
-            justify-content: space-between; 
-            align-items: center; 
-            margin-bottom: 30px; 
-            height: 50px;
-        }
-        
-        .page-title { 
-            font-size: 32px; 
-            font-weight: 800; 
-            color: var(--primary); 
-            display: flex; 
-            align-items: center; 
-            gap: 15px; 
-        }
-        
-        [data-theme="dark"] .page-title { color: var(--text); }
+        main { flex: 1; padding: 25px; overflow-y: auto; position: relative; background: var(--bg); }
+        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; }
+        .page-title { font-size: 26px; font-weight: 700; color: var(--primary); display: flex; align-items: center; gap: 10px; }
+        [data-theme="dark"] .page-title { color: white; }
 
-        /* גריד וכרטיסים */
-        .grid-3 { 
-            display: grid; 
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); 
-            gap: 25px; 
-            margin-bottom: 35px; 
-        }
-        
-        .stat-card { 
-            background: var(--surface); 
-            padding: 30px; 
-            border-radius: var(--radius); 
-            border: 1px solid var(--border); 
-            box-shadow: var(--shadow); 
-            position: relative; 
-            overflow: hidden; 
-        }
-        
-        .stat-card:hover { transform: translateY(-5px); }
-        
-        .stat-val { 
-            font-size: 42px; 
-            font-weight: 800; 
-            margin-top: 10px; 
-            color: var(--text); 
-        }
-        
-        .stat-label { 
-            font-size: 15px; 
-            color: var(--text-muted); 
-            font-weight: 500; 
-        }
-        
-        .card { 
-            background: var(--surface); 
-            padding: 25px; 
-            border-radius: var(--radius); 
-            border: 1px solid var(--border); 
-            box-shadow: var(--shadow); 
-            margin-bottom: 25px; 
-        }
+        /* כרטיסים וגריד */
+        .grid-3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 20px; margin-bottom: 25px; }
+        .card { background: var(--surface); padding: 25px; border-radius: var(--radius); border: 1px solid var(--border); box-shadow: var(--shadow); margin-bottom: 25px; }
+        .stat-val { font-size: 36px; font-weight: 800; color: var(--text); }
+        .stat-label { font-size: 13px; color: var(--text-muted); }
 
         /* טבלה */
-        .table-frame { 
-            background: var(--surface); 
-            border-radius: var(--radius); 
-            border: 1px solid var(--border); 
-            box-shadow: var(--shadow); 
-            display: flex; 
-            flex-direction: column; 
-            height: calc(100vh - 180px); 
-            overflow: hidden; 
-            position: relative; 
-        }
-        
-        .table-tools { 
-            padding: 20px; 
-            border-bottom: 1px solid var(--border); 
-            display: flex; 
-            gap: 15px; 
-            align-items: center; 
-            background: var(--bg); 
-            flex-wrap: wrap; 
-        }
-        
+        .table-frame { background: var(--surface); border-radius: var(--radius); border: 1px solid var(--border); box-shadow: var(--shadow); display: flex; flex-direction: column; height: calc(100vh - 170px); overflow: hidden; position: relative; }
+        .table-tools { padding: 15px; border-bottom: 1px solid var(--border); display: flex; gap: 10px; align-items: center; background: var(--bg); flex-wrap: wrap; }
         .table-body-scroll { overflow: auto; flex: 1; }
-        
-        table { width: 100%; border-collapse: collapse; min-width: 1200px; }
-        
-        th { 
-            background: var(--surface); 
-            text-align: right; 
-            padding: 18px; 
-            font-weight: 700; 
-            color: var(--text-muted); 
-            font-size: 13px; 
-            position: sticky; 
-            top: 0; 
-            z-index: 10; 
-            border-bottom: 2px solid var(--border); 
-            white-space: nowrap; 
-        }
-        
-        td { 
-            padding: 16px 18px; 
-            border-bottom: 1px solid var(--border); 
-            font-size: 14px; 
-            vertical-align: middle; 
-            color: var(--text); 
-        }
-        
-        tr:hover { background: rgba(59, 130, 246, 0.05); cursor: pointer; }
+        table { width: 100%; border-collapse: collapse; min-width: 1000px; }
+        th { background: var(--surface); text-align: right; padding: 12px 15px; font-weight: 600; color: var(--text-muted); font-size: 13px; position: sticky; top: 0; z-index: 10; border-bottom: 2px solid var(--border); }
+        td { padding: 10px 15px; border-bottom: 1px solid var(--border); font-size: 13px; color: var(--text); vertical-align: middle; }
+        tr:hover { background: var(--bg); }
+        tr.blocked-row { background: #fee2e2 !important; opacity: 0.8; } /* עיצוב לרשימה שחורה */
 
-        /* כפתורים וטפסים */
-        .btn { 
-            padding: 12px 24px; 
-            border-radius: 8px; 
-            border: none; 
-            cursor: pointer; 
-            font-weight: 600; 
-            display: inline-flex; 
-            align-items: center; 
-            gap: 10px; 
-            font-size: 14px; 
-            white-space: nowrap; 
-        }
-        
-        .btn-primary { background: var(--accent); color: white; box-shadow: 0 4px 10px rgba(37, 99, 235, 0.3); }
-        .btn-primary:hover { background: var(--accent-hover); transform: translateY(-2px); }
-        
+        /* כפתורים */
+        .btn { padding: 8px 16px; border-radius: 6px; border: none; cursor: pointer; font-weight: 600; display: inline-flex; align-items: center; gap: 6px; font-size: 13px; }
+        .btn-primary { background: var(--accent); color: white; }
         .btn-white { background: var(--surface); border: 1px solid var(--border); color: var(--text); }
-        .btn-white:hover { border-color: var(--accent); color: var(--accent); }
-        
         .btn-danger { background: var(--danger); color: white; }
+        .btn-icon { padding: 6px; background: transparent; border: none; cursor: pointer; color: var(--text-muted); font-size: 14px; }
+        .btn-icon:hover { color: var(--accent); background: rgba(0,0,0,0.05); border-radius: 4px; }
         
-        .btn-icon { 
-            padding: 10px; 
-            border-radius: 8px; 
-            background: transparent; 
-            border: none; 
-            cursor: pointer; 
-            color: var(--text-muted); 
-            font-size: 16px; 
-        }
-        .btn-icon:hover { background: rgba(0,0,0,0.05); color: var(--accent); }
-        
-        input, select, textarea { 
-            background: var(--surface); 
-            border: 1px solid var(--border); 
-            color: var(--text); 
-            padding: 14px; 
-            border-radius: 8px; 
-            width: 100%; 
-            font-size: 14px; 
-            margin-bottom: 12px; 
-        }
-        input:focus, select:focus, textarea:focus { border-color: var(--accent); outline: none; box-shadow: 0 0 0 3px rgba(37,99,235,0.1); }
-        
-        /* מודאל */
-        .modal { 
-            position: fixed; 
-            inset: 0; 
-            background: rgba(0,0,0,0.7); 
-            z-index: 2000; 
-            display: none; 
-            justify-content: center; 
-            align-items: center; 
-            backdrop-filter: blur(5px); 
-        }
-        
-        .modal-box { 
-            background: var(--surface); 
-            width: 95%; 
-            max-width: 1200px; 
-            border-radius: 20px; 
-            max-height: 95vh; 
-            display: flex; 
-            flex-direction: column; 
-            box-shadow: 0 50px 100px -20px rgba(0,0,0,0.4); 
-            animation: slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1); 
-        }
-        
-        .modal-head { 
-            padding: 25px 35px; 
-            border-bottom: 1px solid var(--border); 
-            display: flex; 
-            justify-content: space-between; 
-            align-items: center; 
-        }
-        
-        .modal-content { padding: 35px; overflow-y: auto; flex: 1; }
-        
-        .modal-foot { 
-            padding: 25px 35px; 
-            border-top: 1px solid var(--border); 
-            display: flex; 
-            justify-content: flex-end; 
-            gap: 15px; 
-            background: var(--bg); 
-            border-radius: 0 0 20px 20px; 
-        }
-        
-        @keyframes slideUp { from { opacity: 0; transform: translateY(40px); } to { opacity: 1; transform: translateY(0); } }
+        input, select, textarea { background: var(--surface); border: 1px solid var(--border); color: var(--text); padding: 10px; border-radius: 6px; width: 100%; font-size: 14px; margin-bottom: 10px; }
+        input:focus { border-color: var(--accent); outline: 2px solid rgba(59, 130, 246, 0.1); }
 
-        /* יומן */
-        .calendar-grid { 
-            display: grid; 
-            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); 
-            gap: 25px; 
-        }
-        
-        .day-column { 
-            background: var(--surface); 
-            border: 1px solid var(--border); 
-            border-radius: 16px; 
-            padding: 20px; 
-            box-shadow: var(--shadow);
-        }
-        
-        .day-header { 
-            font-weight: 800; 
-            color: var(--accent); 
-            margin-bottom: 20px; 
-            padding-bottom: 15px; 
-            border-bottom: 2px solid var(--bg); 
-            font-size: 16px;
-        }
-        
-        .event-card { 
-            background: var(--bg); 
-            padding: 15px; 
-            border-radius: 10px; 
-            margin-bottom: 15px; 
-            border-right: 5px solid var(--accent); 
-            position: relative; 
-            transition: 0.2s; 
-            cursor: pointer;
-        }
-        
-        .event-card:hover { transform: translateX(-5px); box-shadow: 0 5px 15px rgba(0,0,0,0.05); }
-        .event-time { font-size: 13px; font-weight: bold; color: var(--primary); margin-bottom: 5px; }
-        .event-title { font-weight: 600; margin-bottom: 5px; font-size: 15px; }
-        .event-sub { font-size: 12px; color: var(--text-muted); }
+        /* מודאל */
+        .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 2000; display: none; justify-content: center; align-items: center; backdrop-filter: blur(4px); }
+        .modal-box { background: var(--surface); width: 95%; max-width: 1100px; border-radius: 16px; max-height: 95vh; display: flex; flex-direction: column; box-shadow: 0 50px 100px -20px rgba(0,0,0,0.3); }
+        .modal-head { padding: 20px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
+        .modal-content { padding: 25px; overflow-y: auto; flex: 1; }
+        .modal-foot { padding: 20px; border-top: 1px solid var(--border); display: flex; justify-content: flex-end; gap: 10px; background: var(--bg); border-radius: 0 0 16px 16px; }
 
         /* טאבים */
-        .tabs { display: flex; gap: 30px; border-bottom: 1px solid var(--border); margin-bottom: 30px; }
-        .tab { 
-            padding: 15px 0; 
-            cursor: pointer; 
-            color: var(--text-muted); 
-            font-weight: 500; 
-            border-bottom: 3px solid transparent; 
-            font-size: 15px;
-            transition: all 0.2s;
-        }
-        .tab:hover { color: var(--text); }
+        .tabs { display: flex; gap: 20px; border-bottom: 1px solid var(--border); margin-bottom: 20px; }
+        .tab { padding: 10px 0; cursor: pointer; color: var(--text-muted); font-weight: 500; border-bottom: 3px solid transparent; font-size: 14px; }
         .tab.active { color: var(--accent); border-color: var(--accent); font-weight: 700; }
-        .tab-panel { display: none; animation: fadeIn 0.3s; }
+        .tab-panel { display: none; }
         .tab-panel.active { display: block; }
         
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        /* יומן */
+        .calendar-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 15px; }
+        .day-col { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 15px; }
+        .day-title { font-weight: bold; margin-bottom: 10px; padding-bottom: 5px; border-bottom: 1px solid var(--border); color: var(--accent); }
+        .cal-event { background: var(--bg); padding: 10px; border-radius: 6px; margin-bottom: 8px; border-right: 3px solid var(--accent); font-size: 13px; position:relative; }
         
-        .cols-menu { 
-            position: absolute; 
-            top: 70px; 
-            left: 20px; 
-            background: var(--surface); 
-            border: 1px solid var(--border); 
-            border-radius: 12px; 
-            padding: 20px; 
-            box-shadow: 0 20px 50px rgba(0,0,0,0.2); 
-            z-index: 100; 
-            display: none; 
-            min-width: 260px; 
-            max-height: 500px;
-            overflow-y: auto;
-        }
-
-        /* רכיבים מיוחדים */
-        .badge { padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: bold; }
-        .cr-row { display: flex; gap: 10px; margin-bottom: 10px; align-items: center; }
-        .cf-item { margin-bottom: 15px; }
-        .cf-label { font-size: 12px; font-weight: 600; color: var(--text-muted); margin-bottom: 5px; display: block; }
+        /* תפריט עמודות */
+        .cols-menu { position: absolute; top: 60px; left: 20px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 15px; box-shadow: 0 10px 25px rgba(0,0,0,0.15); z-index: 100; display: none; min-width: 200px; max-height: 400px; overflow-y: auto; }
+        
+        /* אלמנטים נוספים */
+        .badge { padding: 3px 8px; border-radius: 12px; font-size: 11px; font-weight: 600; }
+        .admin-only { display: none !important; } /* הסתרה ברירת מחדל */
+        .blocked-badge { background: #ef4444; color: white; padding: 2px 6px; border-radius: 4px; font-size: 10px; margin-right: 5px; }
     </style>
 </head>
 <body>
 
     <div id="loginOverlay">
         <div class="login-card">
-            <div style="font-size: 60px; margin-bottom: 15px;">🛡️</div>
-            <h1>נדל"ן PRO <span style="font-size:18px; opacity:0.6; font-weight:400;">Cloud</span></h1>
-            <p style="margin-bottom: 30px; color: #64748b; font-size: 14px;">כניסה מאובטחת למערכת</p>
-            <input type="email" id="txtEmail" class="login-input" placeholder="כתובת אימייל">
-            <input type="password" id="txtPass" class="login-input" placeholder="סיסמה אישית">
-            <button class="login-btn" id="btnLogin">התחבר למערכת</button>
-            <div id="loginError" style="color:var(--danger); margin-top:20px; font-size:14px; font-weight:bold;"></div>
+            <div style="font-size: 50px; margin-bottom: 10px;">🔐</div>
+            <h1>כניסה למערכת</h1>
+            <p style="margin-bottom: 20px; color: var(--text-muted);">נדל"ן PRO - גרסה 18.0</p>
+            <input type="email" id="txtEmail" class="login-input" placeholder="אימייל">
+            <input type="password" id="txtPass" class="login-input" placeholder="סיסמה">
+            <button class="login-btn" id="btnLogin">התחבר</button>
+            <div id="loginError" style="color:var(--danger); margin-top:15px; font-size:13px;"></div>
         </div>
     </div>
 
@@ -488,59 +135,51 @@
             <aside>
                 <div class="brand">
                     <div class="brand-title">🏢 נדל"ן PRO</div>
-                    <div style="font-size:12px; opacity:0.6; margin-top:5px;">V17.5 Enterprise Edition</div>
+                    <div style="font-size:11px; opacity:0.6; margin-top:5px;">מערכת ניהול מתקדמת</div>
                 </div>
                 <div class="nav-list">
-                    <div class="nav-item active" onclick="nav('dashboard')"><i class="fa-solid fa-chart-line"></i> דשבורד מנהלים</div>
+                    <div class="nav-item active" onclick="nav('dashboard')"><i class="fa-solid fa-chart-pie"></i> דשבורד מנהלים</div>
                     <div class="nav-item" onclick="nav('crm')"><i class="fa-solid fa-users"></i> מאגר לקוחות</div>
-                    <div class="nav-item" onclick="nav('calendar')"><i class="fa-solid fa-calendar-days"></i> יומן ופגישות</div>
-                    <div class="nav-item" onclick="nav('projects')"><i class="fa-solid fa-building"></i> פרויקטים בבנייה</div>
-                    <div class="nav-item" onclick="nav('settings')"><i class="fa-solid fa-sliders"></i> הגדרות מערכת</div>
+                    <div class="nav-item" onclick="nav('calendar')"><i class="fa-solid fa-calendar-days"></i> יומן ומשימות</div>
+                    <div class="nav-item" onclick="nav('projects')"><i class="fa-solid fa-building"></i> פרויקטים</div>
+                    <div class="nav-item" onclick="nav('settings')"><i class="fa-solid fa-sliders"></i> הגדרות והרשאות</div>
                 </div>
                 <div class="user-panel">
                     <div>
                         <div id="lblUser" style="font-weight:bold;">אורח</div>
-                        <div style="font-size:11px; opacity:0.7;">מחובר לענן (Online)</div>
+                        <div id="lblRole" style="font-size:10px; color:var(--accent);">טוען הרשאות...</div>
                     </div>
-                    <button class="btn-icon" onclick="doLogout()" style="color:white;" title="התנתק מהמערכת"><i class="fa-solid fa-power-off"></i></button>
+                    <button class="btn-icon" onclick="doLogout()"><i class="fa-solid fa-power-off"></i></button>
                 </div>
             </aside>
 
             <main>
                 <section id="dashboard" class="page">
-                    <div class="header">
-                        <div class="page-title"><i class="fa-solid fa-gauge-high"></i> מרכז שליטה</div>
-                        <div style="font-weight:bold; color:var(--accent); font-size: 18px;" id="dateDisplay"></div>
-                    </div>
-
+                    <div class="header"><div class="page-title"><i class="fa-solid fa-gauge"></i> דשבורד</div><div id="dateDisplay"></div></div>
+                    
                     <div class="grid-3">
-                        <div class="stat-card" onclick="nav('crm')" style="cursor:pointer;">
+                        <div class="card" onclick="nav('crm')">
                             <div class="stat-val" id="stTotal">0</div>
-                            <div class="stat-label">סה"כ לקוחות במאגר</div>
-                            <i class="fa-solid fa-database" style="position:absolute; bottom:20px; left:20px; font-size:80px; opacity:0.05;"></i>
+                            <div class="stat-label">לקוחות במאגר</div>
                         </div>
-                        <div class="stat-card" style="border-bottom: 5px solid var(--warning);">
+                        <div class="card">
                             <div class="stat-val" id="stActive">0</div>
-                            <div class="stat-label">לקוחות בטיפול / מו"מ</div>
-                            <i class="fa-solid fa-fire" style="position:absolute; bottom:20px; left:20px; font-size:80px; opacity:0.05; color:var(--warning);"></i>
+                            <div class="stat-label">בטיפול פעיל</div>
                         </div>
-                        <div class="stat-card" style="border-bottom: 5px solid var(--success);">
+                        <div class="card">
                             <div class="stat-val" id="stDeals">0</div>
-                            <div class="stat-label">חוזים שנחתמו החודש</div>
-                            <i class="fa-solid fa-handshake" style="position:absolute; bottom:20px; left:20px; font-size:80px; opacity:0.05; color:var(--success);"></i>
+                            <div class="stat-label">עסקאות החודש</div>
                         </div>
                     </div>
 
-                    <div style="display:grid; grid-template-columns: 2fr 1fr; gap:30px;">
+                    <div style="display:grid; grid-template-columns: 2fr 1fr; gap:20px;">
                         <div class="card">
-                            <h3 style="margin-bottom:25px; color:var(--primary);"><i class="fa-solid fa-calendar-check"></i> פגישות ומשימות להיום</h3>
+                            <h3>📋 משימות להיום</h3>
                             <div id="dashboardAgenda"></div>
                         </div>
-                        <div class="card" style="border:1px solid var(--border);">
-                            <h3 style="margin-bottom:25px; color:var(--text);"><i class="fa-solid fa-bolt"></i> עדכונים אחרונים</h3>
-                            <div id="liveFeed" style="font-size:13px; line-height:2.4; color:var(--text-muted);">
-                                <div><i class="fa-solid fa-spinner fa-spin"></i> טוען נתונים מהענן...</div>
-                            </div>
+                        <div class="card">
+                            <h3>📡 עדכונים חיים</h3>
+                            <div id="liveFeed" style="font-size:12px; line-height:2; color:var(--text-muted);">טוען...</div>
                         </div>
                     </div>
                 </section>
@@ -548,33 +187,38 @@
                 <section id="crm" class="page" style="display:none;">
                     <div class="header">
                         <div class="page-title">מאגר הלקוחות</div>
-                        <div style="display:flex; gap:15px;">
-                            <button class="btn btn-white" onclick="document.getElementById('excelIn').click()"><i class="fa-solid fa-file-excel"></i> ייבוא אקסל (חכם)</button>
+                        <div style="display:flex; gap:10px;">
+                            <button class="btn btn-white" onclick="document.getElementById('excelIn').click()"><i class="fa-solid fa-file-excel"></i> ייבוא אקסל (V18)</button>
                             <input type="file" id="excelIn" hidden>
-                            <button class="btn btn-white" onclick="exportExcel()"><i class="fa-solid fa-download"></i> ייצוא הכל</button>
-                            <button class="btn btn-primary" onclick="openModal()"><i class="fa-solid fa-plus"></i> לקוח חדש</button>
+                            <button class="btn btn-white admin-btn" onclick="exportExcel()"><i class="fa-solid fa-download"></i> ייצוא</button>
+                            <button class="btn btn-primary" onclick="openModal()"><i class="fa-solid fa-plus"></i> חדש</button>
                         </div>
                     </div>
 
                     <div class="table-frame">
                         <div class="table-tools">
                             <div style="flex:1; position:relative;">
-                                <i class="fa-solid fa-search" style="position:absolute; right:15px; top:15px; color:#94a3b8;"></i>
-                                <input type="text" id="searchBox" placeholder="חיפוש חכם (שם, ת.ז, טלפון, הערות...)" onkeyup="renderTable()" style="padding-right:45px; max-width:400px; margin:0;">
+                                <i class="fa-solid fa-search" style="position:absolute; right:10px; top:10px; color:#94a3b8;"></i>
+                                <input type="text" id="searchBox" placeholder="חיפוש חכם (שם, טלפון, עיר...)" onkeyup="renderTable()" style="padding-right:30px; margin:0;">
                             </div>
-                            <div style="width:1px; height:30px; background:var(--border); margin:0 10px;"></div>
-                            <select id="filterStat" onchange="renderTable()" style="width:180px; margin:0; font-weight:bold;">
-                                <option value="">הצג כל הסטטוסים</option>
+                            <select id="filterStat" onchange="renderTable()" style="width:140px; margin:0; font-weight:bold;">
+                                <option value="">הכל</option>
                                 <option>חדש</option>
                                 <option>בטיפול</option>
                                 <option>מו"מ</option>
                                 <option>חוזה</option>
-                                <option>לא רלוונטי</option>
+                                <option>חסום</option>
                             </select>
-                            <button class="btn btn-white" onclick="toggleColsMenu()" title="בחר עמודות לתצוגה"><i class="fa-solid fa-table-columns"></i></button>
-                            <button class="btn btn-white" onclick="toggleTheme()" title="מצב לילה/יום"><i class="fa-solid fa-moon"></i></button>
+                            <button class="btn btn-white" onclick="toggleColsMenu()"><i class="fa-solid fa-columns"></i> עמודות</button>
+                            
+                            <div id="bulkActions" style="display:none; border-right:1px solid var(--border); padding-right:10px; gap:5px;">
+                                <button class="btn btn-danger admin-btn" onclick="deleteSelected()"><i class="fa-solid fa-trash"></i> מחק מסומנים</button>
+                                <span id="selectedCount" style="font-size:12px;">0 נבחרו</span>
+                            </div>
                         </div>
+                        
                         <div id="colsMenu" class="cols-menu"></div>
+
                         <div class="table-body-scroll">
                             <table id="mainTable">
                                 <thead id="tableHead"></thead>
@@ -586,55 +230,67 @@
 
                 <section id="calendar" class="page" style="display:none;">
                     <div class="header">
-                        <div class="page-title">יומן פגישות ומשימות</div>
-                        <button class="btn btn-primary" onclick="openGeneralTaskModal()"><i class="fa-solid fa-plus"></i> הוסף תזכורת אישית</button>
+                        <div class="page-title">יומן</div>
+                        <button class="btn btn-primary" onclick="openGeneralTaskModal()">+ משימה אישית</button>
                     </div>
                     
-                    <div id="quickTaskArea" class="card" style="display:none; background:#eff6ff; border:2px solid var(--accent);">
-                        <h4 style="color:var(--accent); margin-bottom:15px;">הוספת תזכורת כללית (ללא שיוך ללקוח)</h4>
-                        <div style="display:flex; gap:15px; flex-wrap:wrap;">
-                            <input type="text" id="genTaskTitle" placeholder="מה המשימה לביצוע?" style="flex:2;">
-                            <input type="date" id="genTaskDate" style="flex:1;">
-                            <input type="time" id="genTaskTime" style="flex:1;">
-                            <button class="btn btn-primary" onclick="addGeneralTask()">שמור ביומן</button>
+                    <div id="quickTaskArea" class="card" style="display:none; background:#eff6ff; border:1px solid var(--accent);">
+                        <h4>הוספת משימה ליומן (ללא לקוח)</h4>
+                        <div style="display:flex; gap:10px;">
+                            <input type="text" id="genTaskTitle" placeholder="מה צריך לעשות?">
+                            <input type="date" id="genTaskDate">
+                            <input type="time" id="genTaskTime">
+                            <button class="btn btn-primary" onclick="addGeneralTask()">שמור</button>
                             <button class="btn btn-white" onclick="document.getElementById('quickTaskArea').style.display='none'">ביטול</button>
                         </div>
                     </div>
 
-                    <div id="calendarView" class="calendar-grid">
-                        </div>
+                    <div id="calendarView" class="calendar-grid"></div>
                 </section>
 
                 <section id="projects" class="page" style="display:none;">
-                    <div class="header">
-                        <div class="page-title">ניהול פרויקטים</div>
-                    </div>
-                    <div class="card">
-                        <div style="text-align:center; padding:80px; color:var(--text-muted);">
-                            <i class="fa-solid fa-person-digging" style="font-size:70px; margin-bottom:25px; opacity:0.5;"></i>
-                            <h2>מודול פרויקטים בבנייה</h2>
-                            <p style="font-size:18px; max-width:500px; margin:0 auto;">
-                                כאן יופיע ניהול המלאי של הבניינים והדירות (קומה, כיוון, מחיר למטר).
-                                <br>המודול נמצא כעת בפיתוח ויתווסף בגרסה הבאה.
-                            </p>
-                        </div>
+                    <div class="header"><div class="page-title">פרויקטים</div></div>
+                    <div class="card" style="text-align:center; padding:50px;">
+                        <i class="fa-solid fa-helmet-safety" style="font-size:40px; color:var(--text-muted);"></i>
+                        <h3>מודול ניהול מלאי דירות</h3>
+                        <p>יעלה בגרסה הבאה. כאן ינוהלו הבניינים, מלאי דירות, מחירונים ותוכניות.</p>
                     </div>
                 </section>
 
                 <section id="settings" class="page" style="display:none;">
-                    <div class="header"><div class="page-title">הגדרות מערכת</div></div>
-                    <div style="display:grid; grid-template-columns: 1fr 1fr; gap:30px;">
+                    <div class="header"><div class="page-title">הגדרות</div></div>
+                    
+                    <div class="grid-3">
                         <div class="card">
-                            <h3>הגדרות פיננסיות</h3>
-                            <p style="margin-bottom:15px; color:var(--text-muted);">משמשות לחישובי המשכנתא במערכת</p>
-                            <label>ריבית פריים נוכחית (%)</label>
+                            <h3>⚙️ כללי</h3>
+                            <label>ריבית פריים (%)</label>
                             <input type="number" id="setPrime" value="6.0">
-                            <button class="btn btn-primary" onclick="saveSettings()">שמור שינויים</button>
+                            <button class="btn btn-primary" onclick="saveSettings()">שמור</button>
                         </div>
+                        
+                        <div class="card admin-btn">
+                            <h3>👥 ניהול משתמשים והרשאות</h3>
+                            <p style="font-size:12px; color:var(--text-muted);">הוסף אימיילים של עובדים והגדר את תפקידם.</p>
+                            <div id="usersList" style="margin-bottom:15px; max-height:150px; overflow-y:auto; border:1px solid var(--border); padding:5px; border-radius:4px;"></div>
+                            
+                            <div style="display:flex; gap:5px;">
+                                <input id="newUserEmail" placeholder="אימייל העובד" style="margin:0;">
+                                <select id="newUserRole" style="margin:0; width:100px;">
+                                    <option value="agent">סוכן</option>
+                                    <option value="admin">מנהל</option>
+                                </select>
+                                <button class="btn btn-primary" onclick="addUser()">הוסף</button>
+                            </div>
+                            <div style="margin-top:10px; font-size:11px;">
+                                * <b>מנהל:</b> גישה מלאה, מחיקה, ייצוא.<br>
+                                * <b>סוכן:</b> רואה רק לידים שלו (או הכל - לפי הגדרה), ללא מחיקה.
+                            </div>
+                        </div>
+
                         <div class="card">
-                            <h3>גיבוי ושחזור</h3>
-                            <p style="margin-bottom:15px; color:var(--text-muted);">מומלץ לבצע גיבוי ידני של המאגר אחת לשבוע.</p>
-                            <button class="btn btn-white" onclick="exportExcel()"><i class="fa-solid fa-download"></i> הורד גיבוי מלא לאקסל</button>
+                            <h3>🔗 כלי שיתוף</h3>
+                            <button class="btn btn-white" style="width:100%; margin-bottom:10px;" onclick="copyJoinLink()"><i class="fa-solid fa-link"></i> העתק קישור למערכת</button>
+                            <button class="btn btn-white" style="width:100%;" onclick="sendSystemEmail()"><i class="fa-solid fa-envelope"></i> שלח הזמנה במייל</button>
                         </div>
                     </div>
                 </section>
@@ -645,108 +301,91 @@
     <div id="modal" class="modal">
         <div class="modal-box">
             <div class="modal-head">
-                <h2 id="modalTitle" style="font-size:24px; color:var(--primary);">כרטיס לקוח</h2>
-                <div style="display:flex; gap:12px;">
-                    <button class="btn-icon" onclick="printClient()" title="הדפס כרטיס"><i class="fa-solid fa-print"></i></button>
-                    <button class="btn-icon" onclick="closeModal()" title="סגור"><i class="fa-solid fa-times"></i></button>
+                <h2 id="modalTitle">כרטיס לקוח</h2>
+                <div style="display:flex; gap:10px;">
+                    <button class="btn-icon" onclick="printClient()"><i class="fa-solid fa-print"></i></button>
+                    <button class="btn-icon" onclick="closeModal()"><i class="fa-solid fa-times"></i></button>
                 </div>
             </div>
             <div class="modal-content">
                 <input type="hidden" id="editId">
+                <div id="blockedAlert" style="display:none; background:#fee2e2; color:#b91c1c; padding:10px; border-radius:6px; margin-bottom:15px; font-weight:bold; text-align:center;">
+                    ⚠️ לקוח זה נמצא ברשימה השחורה (ביקש להימחק). אין ליצור קשר!
+                </div>
+
                 <div class="tabs">
-                    <div class="tab active" onclick="switchTab(this, 't1')"><i class="fa-solid fa-user"></i> פרטים אישיים</div>
-                    <div class="tab" onclick="switchTab(this, 't2')"><i class="fa-solid fa-child"></i> משפחה</div>
-                    <div class="tab" onclick="switchTab(this, 't3')"><i class="fa-solid fa-clipboard-list"></i> סטטוס והערות</div>
-                    <div class="tab" onclick="switchTab(this, 't5')"><i class="fa-solid fa-calendar"></i> יומן</div>
-                    <div class="tab" onclick="switchTab(this, 't4')"><i class="fa-solid fa-toolbox"></i> כלים ומחשבונים</div>
+                    <div class="tab active" onclick="switchTab(this, 't1')">פרטים אישיים</div>
+                    <div class="tab" onclick="switchTab(this, 't2')">משפחה</div>
+                    <div class="tab" onclick="switchTab(this, 't3')">סטטוס</div>
+                    <div class="tab" onclick="switchTab(this, 't5')">יומן</div>
+                    <div class="tab" onclick="switchTab(this, 't4')">כלים</div>
                 </div>
 
                 <div id="t1" class="tab-panel active">
-                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:25px;">
-                        <div><label>שם לקוח ראשי</label><input id="inpName" placeholder="שם מלא"></div>
-                        <div><label>בן/בת זוג</label><input id="inpSpouse" placeholder="שם בן/בת הזוג"></div>
-                        <div><label>טלפון ראשי (חובה)</label><input id="inpPhone" placeholder="050..."></div>
+                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:20px;">
+                        <div><label>שם מלא</label><input id="inpName"></div>
+                        <div><label>בן/בת זוג</label><input id="inpSpouse"></div>
+                        <div><label>טלפון (חובה)</label><input id="inpPhone"></div>
                         <div><label>טלפון נוסף</label><input id="inpPhone2"></div>
                         <div><label>אימייל</label><input id="inpEmail"></div>
-                        <div><label>תעודת זהות</label><input id="inpId"></div>
-                        
-                        <div style="grid-column:span 2; background:#f8fafc; padding:25px; border-radius:16px; border:1px solid var(--border);">
-                            <h4 style="color:var(--accent); margin-bottom:20px; border-bottom:1px solid #e2e8f0; padding-bottom:10px;">
-                                <i class="fa-solid fa-database"></i> מידע נוסף (נקלט מאקסל)
-                            </h4>
-                            <div id="customFields" style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:20px;"></div>
+                        <div><label>ת.ז</label><input id="inpId"></div>
+                        <div style="grid-column:span 2; background:#f8fafc; padding:15px; border-radius:8px; border:1px solid var(--border);">
+                            <label style="font-weight:bold; color:var(--accent);">שדות נוספים (מהאקסל)</label>
+                            <div id="customFields" style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px;"></div>
                         </div>
                     </div>
                 </div>
 
                 <div id="t2" class="tab-panel">
                     <div id="childrenList"></div>
-                    <button class="btn btn-white" onclick="addChildRow()" style="margin-top:20px; width:100%;">
-                        <i class="fa-solid fa-plus"></i> הוסף ילד לרשימה
-                    </button>
+                    <button class="btn btn-white" onclick="addChildRow()" style="width:100%; margin-top:10px;">+ הוסף ילד</button>
                 </div>
 
                 <div id="t3" class="tab-panel">
-                    <div style="display:flex; gap:25px; margin-bottom:20px;">
-                        <div style="flex:1">
-                            <label>סטטוס טיפול</label>
-                            <select id="inpStatus" style="font-weight:bold;">
-                                <option>חדש</option>
-                                <option>בטיפול</option>
-                                <option>מו"מ</option>
-                                <option>חוזה</option>
-                                <option>לא רלוונטי</option>
-                            </select>
-                        </div>
-                        <div style="flex:1">
-                            <label>תקציב משוער (₪)</label>
-                            <input type="number" id="inpBudget">
-                        </div>
+                    <div style="display:flex; gap:20px;">
+                        <div style="flex:1"><label>סטטוס</label><select id="inpStatus"><option>חדש</option><option>בטיפול</option><option>מו"מ</option><option>חוזה</option><option>חסום</option><option>לא רלוונטי</option></select></div>
+                        <div style="flex:1"><label>תקציב</label><input type="number" id="inpBudget"></div>
+                        <div style="flex:1"><label>סוכן מטפל</label><input id="inpAgent" readonly style="background:#eee;"></div>
                     </div>
-                    <label>הערות, סיכומי שיחה והיסטוריה (כולל נתונים גולמיים מאקסל)</label>
-                    <textarea id="inpNotes" rows="12" style="font-family:monospace; font-size:13px; line-height:1.6; background:#fffbeb;"></textarea>
-                    <button class="btn btn-white btn-sm" onclick="addTimestamp()"><i class="fa-solid fa-clock"></i> הוסף חותמת זמן ושם נציג</button>
+                    <label>הערות ומידע גולמי</label>
+                    <textarea id="inpNotes" rows="10" style="font-family:monospace; font-size:12px;"></textarea>
+                    <button class="btn btn-white" onclick="addTimestamp()">הוסף חותמת זמן</button>
                 </div>
 
                 <div id="t5" class="tab-panel">
-                    <div style="background:#eff6ff; padding:20px; border-radius:16px; margin-bottom:25px; border:1px solid #bfdbfe;">
-                        <h4 style="color:var(--accent); margin-bottom:15px;">קבע פגישה/משימה חדשה ללקוח זה</h4>
-                        <div style="display:flex; gap:15px; align-items:flex-end;">
-                            <div style="flex:1"><label style="margin-bottom:5px; display:block; font-size:12px;">תאריך</label><input type="date" id="meetDate" style="margin:0;"></div>
-                            <div style="flex:1"><label style="margin-bottom:5px; display:block; font-size:12px;">שעה</label><input type="time" id="meetTime" style="margin:0;"></div>
-                            <div style="flex:2"><label style="margin-bottom:5px; display:block; font-size:12px;">נושא</label><input type="text" id="meetNote" placeholder="לדוגמה: פגישה במשרד" style="margin:0;"></div>
-                            <button class="btn btn-primary" onclick="addMeeting()">שבץ ביומן</button>
+                    <div style="background:#eff6ff; padding:15px; border-radius:8px; margin-bottom:15px;">
+                        <h4>קבע פגישה חדשה</h4>
+                        <div style="display:flex; gap:10px;">
+                            <input type="date" id="meetDate" style="margin:0;">
+                            <input type="time" id="meetTime" style="margin:0;">
+                            <input type="text" id="meetNote" placeholder="נושא" style="margin:0;">
+                            <button class="btn btn-primary" onclick="addMeeting()">שבץ</button>
                         </div>
                     </div>
-                    <h4 style="margin-bottom:15px;">היסטוריית פגישות:</h4>
                     <div id="clientMeetingsList"></div>
                 </div>
 
                 <div id="t4" class="tab-panel">
-                    <div style="display:grid; grid-template-columns: 1fr 1fr; gap:40px;">
-                        <div class="card" style="margin:0; border:2px solid var(--accent);">
-                            <h3 style="color:var(--accent); margin-bottom:15px;"><i class="fa-solid fa-calculator"></i> מחשבון משכנתא</h3>
-                            <label>סכום ההלוואה</label>
-                            <input type="number" id="mLoan" placeholder="לדוגמה: 1000000">
-                            <div style="background:#f1f5f9; padding:15px; border-radius:10px; margin-top:15px; text-align:center;">
-                                <div style="font-size:13px; color:var(--text-muted);">החזר חודשי משוער</div>
-                                <div style="font-size:32px; font-weight:800; color:var(--primary);" id="mRes">0 ₪</div>
-                            </div>
-                            <button class="btn btn-primary" onclick="calcModal()" style="width:100%; margin-top:15px;">בצע חישוב</button>
+                    <div style="display:grid; grid-template-columns: 1fr 1fr; gap:20px;">
+                        <div class="card" style="margin:0;">
+                            <h4>מחשבון משכנתא</h4>
+                            <input type="number" id="mLoan" placeholder="סכום הלוואה">
+                            <div style="font-weight:bold; margin-top:5px;">החזר: <span id="mRes">0</span> ₪</div>
+                            <button class="btn btn-primary" style="width:100%; margin-top:10px;" onclick="calcModal()">חשב</button>
                         </div>
-                        <div style="display:flex; flex-direction:column; gap:15px; justify-content:center;">
-                            <button class="btn btn-white" onclick="sendWhatsapp()" style="height:60px; font-size:16px;"><i class="fa-brands fa-whatsapp" style="color:#25D366; font-size:24px;"></i> שלח הודעת וואטסאפ</button>
-                            <button class="btn btn-white" onclick="sendEmail()" style="height:60px; font-size:16px;"><i class="fa-solid fa-envelope" style="color:#EA4335; font-size:24px;"></i> שלח אימייל</button>
-                            <button class="btn btn-white" onclick="genPDF()" style="height:60px; font-size:16px;"><i class="fa-solid fa-file-pdf" style="color:#F40F02; font-size:24px;"></i> הפק הצעת מחיר (PDF)</button>
+                        <div style="display:flex; flex-direction:column; gap:10px;">
+                            <button class="btn btn-white comm-btn" onclick="sendWhatsapp()"><i class="fa-brands fa-whatsapp" style="color:#25D366;"></i> וואטסאפ</button>
+                            <button class="btn btn-white comm-btn" onclick="sendEmail()"><i class="fa-solid fa-envelope"></i> אימייל</button>
+                            <button class="btn btn-white" onclick="genPDF()"><i class="fa-solid fa-file-pdf"></i> הפק PDF</button>
                         </div>
                     </div>
                 </div>
             </div>
             <div class="modal-foot">
-                <button class="btn btn-danger" id="btnDelete" onclick="deleteClient()" style="display:none;"><i class="fa-solid fa-trash"></i> מחק לקוח</button>
+                <button class="btn btn-danger admin-btn" id="btnDelete" onclick="deleteClient()" style="display:none;">מחק</button>
                 <div style="flex:1"></div>
                 <button class="btn btn-white" onclick="closeModal()">ביטול</button>
-                <button class="btn btn-primary" onclick="saveData()"><i class="fa-solid fa-save"></i> שמור שינויים בענן</button>
+                <button class="btn btn-primary" onclick="saveData()">שמור</button>
             </div>
         </div>
     </div>
@@ -756,7 +395,7 @@
         import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
         import { getDatabase, ref, set, push, onValue, remove, update } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 
-        // *** המפתח הסודי שלך ***
+        // *** קונפיגורציה ***
         const firebaseConfig = {
             apiKey: "AIzaSyCJvUDVuccEZSuTsUSs7o-hnpME2WaTWio", 
             authDomain: "nadlan-pro.firebaseapp.com",
@@ -771,12 +410,16 @@
         const auth = getAuth(app);
         const db = getDatabase(app);
 
+        // משתני מערכת
         let currentUser = null;
+        let userRole = 'agent'; // ברירת מחדל: סוכן (מוגבל)
         let clientsData = {};
         let meetingsData = {};
+        let usersData = {}; // רשימת המורשים
         let settingsData = { prime: 6.0 };
         let customHeaders = new Set();
         let visibleCols = ['name', 'phone', 'city', 'status', 'budget'];
+        let selectedClients = new Set();
 
         // --- התחברות ---
         document.getElementById('btnLogin').addEventListener('click', () => {
@@ -784,8 +427,8 @@
             const p = document.getElementById('txtPass').value;
             document.getElementById('btnLogin').innerText = "מתחבר...";
             signInWithEmailAndPassword(auth, e, p).catch(err => {
-                document.getElementById('btnLogin').innerText = "התחבר למערכת";
-                document.getElementById('loginError').innerText = "שגיאה: " + err.message;
+                document.getElementById('btnLogin').innerText = "התחבר";
+                document.getElementById('loginError').innerText = err.message;
             });
         });
 
@@ -794,9 +437,9 @@
                 currentUser = user;
                 document.getElementById('loginOverlay').style.display = 'none';
                 document.getElementById('mainApp').style.display = 'block';
-                document.getElementById('lblUser').innerText = user.email.split('@')[0];
+                document.getElementById('lblUser').innerText = user.email;
                 initData();
-                document.getElementById('dateDisplay').innerText = new Date().toLocaleDateString('he-IL', {weekday:'long', day:'numeric', month:'long'});
+                document.getElementById('dateDisplay').innerText = new Date().toLocaleDateString('he-IL');
             } else {
                 document.getElementById('loginOverlay').style.display = 'flex';
                 document.getElementById('mainApp').style.display = 'none';
@@ -805,9 +448,31 @@
 
         window.doLogout = () => signOut(auth);
 
-        // --- סנכרון נתונים ---
+        // --- טעינת נתונים והרשאות ---
         function initData() {
-            // האזנה ללקוחות
+            // טעינת הגדרות משתמשים (לקביעת הרשאה)
+            onValue(ref(db, 'users'), snap => {
+                usersData = snap.val() || {};
+                
+                // בדיקת הרשאה ליוזר הנוכחי
+                const myUser = Object.values(usersData).find(u => u.email === currentUser.email);
+                
+                // אם אין משתמשים בכלל - הראשון הוא מנהל
+                if (Object.keys(usersData).length === 0) {
+                    userRole = 'admin';
+                    push(ref(db, 'users'), { email: currentUser.email, role: 'admin' });
+                } else if (myUser) {
+                    userRole = myUser.role;
+                } else {
+                    userRole = 'agent'; // ברירת מחדל לחדשים שלא הוגדרו
+                }
+
+                document.getElementById('lblRole').innerText = userRole === 'admin' ? 'מנהל מערכת' : 'סוכן';
+                applyPermissions(); // החלת הרשאות על הממשק
+                renderUsersList(); // למסך הגדרות
+            });
+
+            // טעינת לקוחות
             onValue(ref(db, 'clients'), snap => {
                 clientsData = snap.val() || {};
                 Object.values(clientsData).forEach(c => {
@@ -815,24 +480,43 @@
                 });
                 renderTable();
                 updateStats();
-                updateFeed(); // עדכון פיד חדשות
+                updateFeed();
             });
 
-            // האזנה לפגישות
             onValue(ref(db, 'meetings'), snap => {
                 meetingsData = snap.val() || {};
                 renderCalendar(); 
             });
+        }
 
-            // האזנה להגדרות
-            onValue(ref(db, 'settings'), snap => {
-                const val = snap.val();
-                if(val && val.prime) settingsData.prime = val.prime;
-                if(document.getElementById('setPrime')) document.getElementById('setPrime').value = settingsData.prime;
+        // --- ניהול הרשאות ---
+        function applyPermissions() {
+            const isAdmin = userRole === 'admin';
+            // הסתרה/הצגה של כפתורי מנהל
+            document.querySelectorAll('.admin-btn').forEach(el => {
+                el.style.display = isAdmin ? 'inline-flex' : 'none';
             });
         }
 
-        // --- ייבוא אקסל חכם (מנגנון V17.5) ---
+        window.addUser = () => {
+            const email = document.getElementById('newUserEmail').value;
+            const role = document.getElementById('newUserRole').value;
+            if(email) {
+                push(ref(db, 'users'), { email, role });
+                alert('משתמש נוסף בהצלחה');
+                document.getElementById('newUserEmail').value = '';
+            }
+        };
+
+        function renderUsersList() {
+            const div = document.getElementById('usersList');
+            div.innerHTML = '';
+            Object.entries(usersData).forEach(([key, u]) => {
+                div.innerHTML += `<div style="display:flex; justify-content:space-between; padding:5px; border-bottom:1px solid #eee;"><span>${u.email}</span> <b>${u.role}</b></div>`;
+            });
+        }
+
+        // --- ייבוא אקסל חכם V18 (כולל ילדים ושדות דינמיים) ---
         document.getElementById('excelIn').addEventListener('change', (e) => {
             const fileName = e.target.files[0].name;
             const r = new FileReader();
@@ -841,202 +525,116 @@
                 const w = XLSX.read(new Uint8Array(ex.target.result), {type:'array'});
                 const d = XLSX.utils.sheet_to_json(w.Sheets[w.SheetNames[0]]);
                 let count = 0;
-                
-                // פונקציית עזר למציאת ערך לפי מגוון שמות אפשריים לעמודה
+                let dupCount = 0;
+
+                // בדיקת רשימה שחורה לפי שם הקובץ או תוכן
+                const isBlacklist = fileName.includes("למחוק") || fileName.includes("חסום");
+
+                // פונקציית עזר למציאת ערך לפי מילות מפתח
                 const findVal = (row, keywords) => {
                     const key = Object.keys(row).find(k => keywords.some(w => k.includes(w)));
                     return key ? row[key] : '';
                 };
 
                 d.forEach(row => {
-                    // מיפוי שדות חכם - מותאם במיוחד לקבצים שלך
+                    // זיהוי שדות בסיס
                     const phone = String(findVal(row, ['נייד','טלפון','פלאפון']) || '').replace(/\D/g,'');
-                    const name = findVal(row, ['שם משפחה','שם פרטי','שם']) || 'לקוח ללא שם';
+                    const idNum = String(findVal(row, ['ת.ז','זהות']) || '');
                     
-                    if(name !== 'לקוח ללא שם' || phone.length > 0) {
+                    // בדיקת כפילות
+                    const exists = Object.values(clientsData).some(c => (c.phone === phone && phone.length>5) || (c.idNum === idNum && idNum.length>5));
+                    
+                    if (!exists && phone.length > 0) {
+                        const name = findVal(row, ['שם משפחה','שם פרטי','שם']) || 'ללא שם';
                         
-                        // בניית יומן נתונים גולמיים להערות (כדי ששום דבר לא ילך לאיבוד)
-                        let rawDataLog = `\n--- ייבוא מקובץ: ${fileName} (${new Date().toLocaleDateString()}) ---\n`;
-                        for (let [key, val] of Object.entries(row)) {
-                            if(val) rawDataLog += `${key}: ${val}\n`; 
-                        }
-
-                        // יצירת האובייקט
+                        // בניית אובייקט לקוח
                         const c = {
-                            name: name + ' ' + (findVal(row, ['פרטי']) || ''), // ניסיון לחבר שם משפחה ופרטי
+                            name: name + ' ' + (findVal(row, ['פרטי']) || ''),
                             spouse: findVal(row, ['אשה','אישה','זוג']) || '',
                             phone: phone,
-                            phone2: String(findVal(row, ['טלפון 2','נוסף','אישה']) || '').replace(/\D/g,''), // לעיתים הטלפון השני הוא של האישה
+                            phone2: String(findVal(row, ['טלפון 2','נוסף','אישה']) || '').replace(/\D/g,''),
                             email: findVal(row, ['מייל','דוא']),
-                            idNum: findVal(row, ['ת.ז','זהות']),
+                            idNum: idNum,
                             city: findVal(row, ['עיר','כתובת']),
-                            status: 'חדש',
-                            notes: rawDataLog, // גיבוי מלא
+                            status: isBlacklist ? 'חסום' : 'חדש', // סימון אוטומטי לחסומים
+                            notes: `\n--- ייבוא ${fileName} ---\n`, // התחלת לוג הערות
                             lastUpdate: Date.now(),
                             agent: currentUser.email,
                             children: [],
                             customData: {} 
                         };
-                        
-                        // מיפוי שדות ספציפיים לתוך customData כדי שיהיו בטבלה
-                        // אלו שדות שראינו בקבצים שלך:
-                        const specificFields = ['רחוב', 'מספר בית', 'ישיבה', 'עיסוק', 'מקור'];
-                        specificFields.forEach(field => {
-                            const val = findVal(row, [field]);
-                            if(val) c.customData[field] = val;
-                        });
+
+                        // 1. לולאה חכמה לשאיבת כל הנתונים להערות + שדות מיוחדים
+                        for (let [key, val] of Object.entries(row)) {
+                            if(val) {
+                                c.notes += `${key}: ${val}\n`; // גיבוי להערות
+                                
+                                // מיפוי שדות מיוחדים לטבלה
+                                if(['ישיבה','סמינר','רחוב','מספר','עיסוק'].some(x => key.includes(x))) {
+                                    c.customData[key] = val;
+                                }
+                            }
+                        }
+
+                        // 2. זיהוי ילדים (לולאה על עמודות ממוספרות)
+                        // מחפש תבניות כמו "שם ילד 1", "ת.ז 1" וכו'
+                        for(let i=1; i<=15; i++) {
+                            const childName = findVal(row, [`שם הילד${i}`, `שם ילד ${i}`, `ילד ${i}`]);
+                            if (childName) {
+                                const childId = findVal(row, [`ת. זהות${i}`, `ת.ז ${i}`, `זהות ${i}`]);
+                                c.children.push({ name: childName, id: childId || '' });
+                            }
+                        }
 
                         push(ref(db, 'clients'), c);
                         count++;
+                    } else {
+                        dupCount++;
                     }
                 });
                 
-                if(count > 0) alert(`✅ בוצע בהצלחה!\nנקלטו ${count} לקוחות.\nכל המידע הגולמי נשמר בהערות, ושדות מרכזיים מופו לכרטיס.`);
-                else alert('❌ לא נקלטו נתונים. בדוק את תקינות הקובץ.');
+                alert(`✅ סיכום ייבוא:\nנקלטו: ${count} לקוחות חדשים.\nדלגו (כפולים): ${dupCount}.\n${isBlacklist ? '⚠️ הקובץ זוהה כרשימה שחורה - הלקוחות סומנו כחסומים.' : ''}`);
             };
             r.readAsArrayBuffer(e.target.files[0]);
         });
 
-        // --- ניהול יומן ותזכורות ---
-        
-        window.openGeneralTaskModal = () => {
-            document.getElementById('quickTaskArea').style.display = 'block';
-            document.getElementById('genTaskTitle').focus();
-        };
-
-        window.addGeneralTask = () => {
-            const title = document.getElementById('genTaskTitle').value;
-            const date = document.getElementById('genTaskDate').value;
-            const time = document.getElementById('genTaskTime').value;
-
-            if(!title || !date) { alert('חובה למלא משימה ותאריך'); return; }
-
-            push(ref(db, 'meetings'), {
-                clientId: 'general',
-                clientName: 'משימה אישית',
-                date: date,
-                time: time || '09:00',
-                note: title,
-                agent: currentUser.email
-            });
-            
-            document.getElementById('quickTaskArea').style.display = 'none';
-            document.getElementById('genTaskTitle').value = '';
-        };
-
-        window.renderCalendar = () => {
-            const container = document.getElementById('calendarView');
-            const dashboardList = document.getElementById('dashboardAgenda');
-            if(!container) return; 
-            
-            container.innerHTML = '';
-            dashboardList.innerHTML = '';
-
-            const sorted = Object.entries(meetingsData).sort((a,b) => (a[1].date+a[1].time).localeCompare(b[1].date+b[1].time));
-            
-            // קיבוץ לפי תאריכים
-            const grouped = {};
-            sorted.forEach(([id, m]) => {
-                if(!grouped[m.date]) grouped[m.date] = [];
-                grouped[m.date].push({id, ...m});
-            });
-
-            const today = new Date().toISOString().split('T')[0];
-            let upcomingCount = 0;
-
-            Object.keys(grouped).sort().forEach(date => {
-                // עיצוב כותרת התאריך
-                const dateObj = new Date(date);
-                const dayName = dateObj.toLocaleDateString('he-IL', {weekday:'long'});
-                const dateStr = dateObj.toLocaleDateString('he-IL', {day:'numeric', month:'numeric'});
-                
-                let html = `
-                <div class="day-column">
-                    <div class="day-header">
-                        <span>${dayName}</span>
-                        <span style="float:left; opacity:0.6; font-size:14px;">${dateStr}</span>
-                    </div>`;
-                
-                grouped[date].forEach(evt => {
-                    const isTask = evt.clientId === 'general';
-                    const icon = isTask ? '<i class="fa-solid fa-check-circle"></i>' : '<i class="fa-solid fa-user"></i>';
-                    const style = isTask ? 'border-color:var(--success)' : 'border-color:var(--accent)';
-                    const bg = isTask ? '#f0fdf4' : '#eff6ff'; // ירוק בהיר למשימות, כחול בהיר לפגישות
-                    
-                    html += `
-                    <div class="event-card" style="${style}; background:${bg};">
-                        <div class="event-time">
-                            ${evt.time} 
-                            <span style="float:left; cursor:pointer; color:var(--danger);" onclick="deleteMeeting('${evt.id}')" title="מחק"><i class="fa-solid fa-trash"></i></span>
-                        </div>
-                        <div class="event-title">${icon} ${isTask ? evt.note : evt.clientName}</div>
-                        <div class="event-sub">${isTask ? '' : evt.note}</div>
-                        ${!isTask ? `<button class="btn-icon" style="font-size:12px; margin-top:5px; background:white; border:1px solid #ccc; padding:2px 8px;" onclick="editClient('${evt.clientId}')">מעבר לתיק</button>` : ''}
-                    </div>`;
-
-                    // דשבורד
-                    if(upcomingCount < 5 && date >= today) {
-                        dashboardList.innerHTML += `
-                        <div style="padding:12px; border-bottom:1px solid #f1f5f9; display:flex; align-items:center; gap:10px;">
-                            <div style="font-weight:bold; color:var(--accent); min-width:45px;">${evt.time}</div>
-                            <div style="flex:1;">
-                                <div style="font-weight:600;">${isTask ? evt.note : evt.clientName}</div>
-                                <div style="font-size:11px; opacity:0.6;">${dateStr} • ${isTask ? 'משימה' : 'פגישה'}</div>
-                            </div>
-                        </div>`;
-                        upcomingCount++;
-                    }
-                });
-                html += `</div>`;
-                container.innerHTML += html;
-            });
-            
-            if(upcomingCount === 0) dashboardList.innerHTML = '<div style="padding:20px; text-align:center; opacity:0.6;">אין פגישות קרובות</div>';
-        };
-
-        // --- לוגיקת ממשק וניווט (V17.5 מורחב) ---
-        
-        window.nav = (p) => {
-            const pages = document.querySelectorAll('.page');
-            pages.forEach(x => x.style.display='none');
-            
-            const target = document.getElementById(p);
-            if(target) target.style.display='block';
-            
-            document.querySelectorAll('.nav-item').forEach(x => x.classList.remove('active'));
-            if(event && event.currentTarget) event.currentTarget.classList.add('active');
-            
-            if(p==='calendar') renderCalendar();
-        }
-
+        // --- טבלה ופעולות גורפות ---
         window.renderTable = () => {
             const tbody = document.getElementById('tableBody');
             const thead = document.getElementById('tableHead');
             const search = document.getElementById('searchBox').value.toLowerCase();
             const filter = document.getElementById('filterStat').value;
             
-            // בניית עמודות דינמית
-            let cols = ['name', 'phone', 'status', 'city'];
-            visibleCols.forEach(c => { if(!cols.includes(c)) cols.push(c); });
+            // עמודות דינמיות
+            let cols = ['checkbox', 'name', 'phone', 'status', 'city', 'agent'];
+            visibleCols.forEach(c => { if(!cols.includes(c) && c!=='checkbox') cols.push(c); });
             
-            thead.innerHTML = `<tr>${cols.map(colName).map(x=>`<th>${x}</th>`).join('')}<th>פעולות</th></tr>`;
+            // כותרות
+            let headHtml = `<tr><th style="width:30px"><input type="checkbox" onchange="toggleSelectAll(this)"></th>`;
+            cols.filter(x=>x!=='checkbox').forEach(c => headHtml += `<th>${colName(c)}</th>`);
+            headHtml += `<th>פעולות</th></tr>`;
+            thead.innerHTML = headHtml;
             tbody.innerHTML = '';
 
             Object.entries(clientsData).forEach(([key, c]) => {
+                // פילטור לפי סוכן (אם לא מנהל - רואה רק את שלו)
+                if (userRole !== 'admin' && c.agent !== currentUser.email) return;
+
                 if (filter && c.status !== filter) return;
-                
-                // חיפוש חכם שכולל גם את ההערות והשדות המיוחדים
-                const txt = (c.name + c.phone + c.idNum + Object.values(c.customData||{}).join(' ') + (c.notes||'')).toLowerCase();
+                const txt = (c.name + c.phone + c.idNum + (c.notes||'')).toLowerCase();
                 if (search && !txt.includes(search)) return;
 
                 const tr = document.createElement('tr');
-                tr.onclick = (e) => { if(e.target.tagName!=='BUTTON' && e.target.tagName!=='I') window.editClient(key); };
+                if (c.status === 'חסום') tr.classList.add('blocked-row'); // צבע אדום לחסומים
+
+                // תא צ'קבוקס
+                let html = `<td><input type="checkbox" class="client-cb" value="${key}" onchange="updateSelection()"></td>`;
                 
-                let html = '';
-                cols.forEach(col => {
+                cols.filter(x=>x!=='checkbox').forEach(col => {
                     let v = '-';
-                    if(col==='name') v = `<b>${c.name}</b><br><small style="opacity:0.7">${c.spouse||''}</small>`;
-                    else if(col==='status') v = `<span class="badge" style="background:${stColor(c.status)}; color:#1e293b;">${c.status}</span>`;
+                    if(col==='name') v = `<b>${c.name}</b><br><small>${c.spouse||''}</small>`;
+                    else if(col==='status') v = `<span class="badge" style="background:${stColor(c.status)}">${c.status}</span>`;
+                    else if(col==='agent') v = c.agent ? c.agent.split('@')[0] : '-';
                     else v = c[col] || (c.customData ? c.customData[col] : '') || '-';
                     html += `<td>${v}</td>`;
                 });
@@ -1047,6 +645,30 @@
             });
         };
 
+        // ניהול בחירה מרובה
+        window.toggleSelectAll = (el) => {
+            document.querySelectorAll('.client-cb').forEach(cb => cb.checked = el.checked);
+            updateSelection();
+        };
+
+        window.updateSelection = () => {
+            selectedClients.clear();
+            document.querySelectorAll('.client-cb:checked').forEach(cb => selectedClients.add(cb.value));
+            
+            const count = selectedClients.size;
+            document.getElementById('bulkActions').style.display = count > 0 ? 'flex' : 'none';
+            document.getElementById('selectedCount').innerText = count + ' נבחרו';
+        };
+
+        window.deleteSelected = () => {
+            if(confirm(`בטוח למחוק ${selectedClients.size} לקוחות? זו פעולה בלתי הפיכה!`)) {
+                selectedClients.forEach(id => remove(ref(db, 'clients/'+id)));
+                selectedClients.clear();
+                updateSelection();
+            }
+        };
+
+        // --- עריכת לקוח ---
         window.editClient = (id) => {
             const c = clientsData[id];
             document.getElementById('editId').value = id;
@@ -1058,28 +680,27 @@
             document.getElementById('inpId').value = c.idNum || '';
             document.getElementById('inpStatus').value = c.status;
             document.getElementById('inpBudget').value = c.budget || '';
+            document.getElementById('inpAgent').value = c.agent || '';
             document.getElementById('inpNotes').value = c.notes || '';
             
-            // טעינת ילדים
+            // הצגת התראה לחסומים
+            document.getElementById('blockedAlert').style.display = (c.status === 'חסום') ? 'block' : 'none';
+            document.querySelectorAll('.comm-btn').forEach(b => b.disabled = (c.status === 'חסום'));
+
+            // ילדים
             document.getElementById('childrenList').innerHTML = '';
             if(c.children) c.children.forEach(k => window.addChildRow(k.name, k.id));
             
-            // טעינת שדות מותאמים אישית
+            // שדות מותאמים
             const cfDiv = document.getElementById('customFields');
             cfDiv.innerHTML = '';
             customHeaders.forEach(k => {
                 const val = (c.customData && c.customData[k]) ? c.customData[k] : '';
-                // יצירת שדה מעוצב
-                const fieldHtml = `
-                <div class="cf-item">
-                    <span class="cf-label">${k}</span>
-                    <input class="cf-inp" data-key="${k}" value="${val}" style="margin:0;">
-                </div>`;
-                cfDiv.innerHTML += fieldHtml;
+                cfDiv.innerHTML += `<div><label style="font-size:11px;">${k}</label><input class="cf-inp" data-key="${k}" value="${val}"></div>`;
             });
 
             renderClientMeetings(id);
-            document.getElementById('btnDelete').style.display = 'block';
+            document.getElementById('btnDelete').style.display = (userRole === 'admin') ? 'block' : 'none'; // רק מנהל מוחק
             document.getElementById('modal').style.display = 'flex';
         };
 
@@ -1091,17 +712,7 @@
             document.getElementById('childrenList').innerHTML = '';
             document.getElementById('customFields').innerHTML = '';
             document.getElementById('clientMeetingsList').innerHTML = '';
-            
-            // הוספת שדות ריקים של custom headers כדי שאפשר יהיה למלא אותם גם בלקוח חדש
-            const cfDiv = document.getElementById('customFields');
-            if(customHeaders.size > 0) {
-                customHeaders.forEach(k => {
-                    cfDiv.innerHTML += `<div class="cf-item"><span class="cf-label">${k}</span><input class="cf-inp" data-key="${k}" style="margin:0;"></div>`;
-                });
-            } else {
-                cfDiv.innerHTML = '<div style="opacity:0.5; font-size:13px;">אין שדות מיוחדים עדיין. ייבא אקסל כדי ליצור כאלה.</div>';
-            }
-
+            document.getElementById('blockedAlert').style.display = 'none';
             document.getElementById('btnDelete').style.display = 'none';
             document.getElementById('modal').style.display = 'flex';
         }
@@ -1121,221 +732,108 @@
                 budget: document.getElementById('inpBudget').value,
                 notes: document.getElementById('inpNotes').value,
                 lastUpdate: Date.now(),
-                agent: currentUser.email,
+                agent: id ? document.getElementById('inpAgent').value : currentUser.email, // שימור סוכן קיים או חדש
                 children: [],
                 customData: {}
             };
             
-            // שמירת ילדים
-            document.querySelectorAll('.cr-row').forEach(r => {
-                c.children.push({
-                    name: r.querySelector('.cn').value, 
-                    id: r.querySelector('.ci').value
-                });
-            });
-            
-            // שמירת שדות מותאמים
-            document.querySelectorAll('.cf-inp').forEach(i => {
-                c.customData[i.dataset.key] = i.value;
-            });
+            document.querySelectorAll('.cr-row').forEach(r => c.children.push({name: r.querySelector('.cn').value, id: r.querySelector('.ci').value}));
+            document.querySelectorAll('.cf-inp').forEach(i => c.customData[i.dataset.key] = i.value);
 
             if(id) update(ref(db, 'clients/'+id), c);
             else push(ref(db, 'clients'), c);
             
-            if(c.status === 'חוזה') confetti({particleCount: 100, spread: 70, origin: { y: 0.6 }});
+            if(c.status === 'חוזה') confetti();
             closeModal();
         };
 
         window.deleteClient = () => {
-            if(confirm('האם אתה בטוח שברצונך למחוק את הלקוח לצמיתות?')) { 
+            if(confirm('למחוק לצמיתות?')) { 
                 remove(ref(db, 'clients/'+document.getElementById('editId').value)); 
                 closeModal(); 
             }
         };
 
-        // --- ניהול פגישות (Backend) ---
-        window.addMeeting = () => {
-            const cid = document.getElementById('editId').value;
-            const date = document.getElementById('meetDate').value;
-            const title = document.getElementById('meetNote').value;
-            
-            if(!cid || !date || !title) {
-                alert('נא למלא תאריך ונושא לפגישה');
-                return;
-            }
-            
+        // --- יומן ומשימות ---
+        window.addGeneralTask = () => {
+            const title = document.getElementById('genTaskTitle').value;
+            const date = document.getElementById('genTaskDate').value;
+            if(!title || !date) return;
             push(ref(db, 'meetings'), {
-                clientId: cid,
-                clientName: document.getElementById('inpName').value,
-                date: date,
-                time: document.getElementById('meetTime').value || '10:00',
-                note: title,
-                agent: currentUser.email
+                clientId: 'general', clientName: 'משימה אישית',
+                date: date, time: document.getElementById('genTaskTime').value || '09:00',
+                note: title, agent: currentUser.email
             });
-            
-            renderClientMeetings(cid); // רענון מיידי
+            document.getElementById('quickTaskArea').style.display = 'none';
         };
 
-        function renderClientMeetings(cid) {
-            const div = document.getElementById('clientMeetingsList');
-            div.innerHTML = '';
-            Object.entries(meetingsData).forEach(([mid, m]) => {
-                if(m.clientId === cid) {
-                    div.innerHTML += `
-                    <div style="background:#f8fafc; padding:10px; border-radius:8px; margin-bottom:8px; display:flex; justify-content:space-between; align-items:center; border:1px solid var(--border);">
-                        <div>
-                            <strong>${m.date} ${m.time}</strong> - ${m.note}
-                        </div>
-                        <button class="btn-icon" onclick="deleteMeeting('${mid}')" style="color:var(--danger);"><i class="fa-solid fa-trash"></i></button>
+        window.renderCalendar = () => {
+            const container = document.getElementById('calendarView');
+            if(!container) return;
+            container.innerHTML = '';
+            document.getElementById('dashboardAgenda').innerHTML = '';
+            
+            // סינון ומיון
+            const sorted = Object.entries(meetingsData)
+                .filter(([k,m]) => userRole==='admin' || m.agent===currentUser.email) // סינון לפי סוכן
+                .sort((a,b) => (a[1].date+a[1].time).localeCompare(b[1].date+b[1].time));
+
+            const grouped = {};
+            sorted.forEach(([id, m]) => { if(!grouped[m.date]) grouped[m.date]=[]; grouped[m.date].push({id, ...m}); });
+            
+            Object.keys(grouped).forEach(date => {
+                let html = `<div class="day-col"><div class="day-title">${new Date(date).toLocaleDateString('he-IL')}</div>`;
+                grouped[date].forEach(evt => {
+                    const isTask = evt.clientId === 'general';
+                    html += `<div class="cal-event" style="border-color:${isTask?'#22c55e':'#3b82f6'}">
+                        <b>${evt.time}</b> ${evt.clientName}<br>${evt.note}
                     </div>`;
-                }
+                    
+                    // דשבורד
+                    if(date >= new Date().toISOString().split('T')[0]) {
+                        document.getElementById('dashboardAgenda').innerHTML += `<div><b>${evt.time}</b> ${evt.clientName} (${date})</div>`;
+                    }
+                });
+                html += `</div>`;
+                container.innerHTML += html;
             });
-        }
-        
-        window.deleteMeeting = (mid) => { 
-            if(confirm('למחוק פגישה זו?')) remove(ref(db, 'meetings/'+mid)); 
         };
-        
-        // --- כלים ועזרים ---
-        
-        // שמירת הגדרות
-        window.saveSettings = () => {
-            const p = document.getElementById('setPrime').value;
-            update(ref(db, 'settings'), { prime: p }).then(()=>alert('ההגדרות נשמרו בהצלחה!'));
-        };
-        
-        // שורת ילד
-        window.addChildRow = (n='', i='') => {
-            const html = `
-            <div class="cr-row">
-                <input class="cn" value="${n}" placeholder="שם הילד" style="margin:0;">
-                <input class="ci" value="${i}" placeholder="מספר זהות" style="margin:0;">
-                <button type="button" class="btn-icon" onclick="this.parentElement.remove()" style="color:var(--danger);"><i class="fa-solid fa-minus-circle"></i></button>
-            </div>`;
-            document.getElementById('childrenList').insertAdjacentHTML('beforeend', html);
+
+        // --- עזרים ---
+        window.nav = (p) => {
+            document.querySelectorAll('.page').forEach(x => x.style.display='none');
+            document.getElementById(p).style.display='block';
+            document.querySelectorAll('.nav-item').forEach(x => x.classList.remove('active'));
+            if(event && event.currentTarget) event.currentTarget.classList.add('active');
+            if(p==='calendar') renderCalendar();
         }
-        
-        // חותמת זמן
-        window.addTimestamp = () => {
-            const t = document.getElementById('inpNotes');
-            const stamp = `\n--- עודכן ע"י ${currentUser.email.split('@')[0]} ב-${new Date().toLocaleString()} ---\n`;
-            t.value = stamp + t.value;
-        }
-        
-        // תפריט עמודות
+
         window.toggleColsMenu = () => {
             const m = document.getElementById('colsMenu');
-            m.style.display = (m.style.display === 'block') ? 'none' : 'block';
-            
-            // רענון התוכן
-            m.innerHTML = '<h4 style="margin-bottom:10px;">הצג/הסתר עמודות:</h4>';
-            
-            // עמודות קבועות
-            ['phone','email','status','city','budget'].forEach(k => {
-                const checked = visibleCols.includes(k) ? 'checked' : '';
-                m.innerHTML += `<div><label><input type="checkbox" onchange="toggleCol('${k}')" ${checked}> ${colName(k)}</label></div>`;
-            });
-            
-            // עמודות מותאמות
-            m.innerHTML += '<hr style="margin:10px 0; border:0; border-top:1px solid #eee;">';
-            customHeaders.forEach(k => {
-                const checked = visibleCols.includes(k) ? 'checked' : '';
-                m.innerHTML += `<div><label><input type="checkbox" onchange="toggleCol('${k}')" ${checked}> ${k}</label></div>`;
+            m.style.display = m.style.display==='block'?'none':'block';
+            m.innerHTML = '';
+            [...visibleCols, ...customHeaders].forEach(k => {
+                m.innerHTML += `<div><label><input type="checkbox" onchange="toggleCol('${k}')" ${visibleCols.includes(k)?'checked':''}> ${colName(k)}</label></div>`;
             });
         }
         
-        window.toggleCol = (k) => { 
-            const i = visibleCols.indexOf(k); 
-            if(i>-1) visibleCols.splice(i,1); else visibleCols.push(k); 
-            renderTable(); 
-        };
+        window.toggleCol = (k) => { const i = visibleCols.indexOf(k); if(i>-1) visibleCols.splice(i,1); else visibleCols.push(k); renderTable(); };
+        window.colName = (k) => ({name:'שם', phone:'טלפון', status:'סטטוס', city:'עיר', agent:'סוכן'}[k]||k);
+        window.stColor = (s) => ({'חדש':'#e2e8f0','מו"מ':'#fde047','חוזה':'#86efac','חסום':'#fecaca'}[s]||'white');
         
-        // סטטיסטיקות
-        window.updateStats = () => { 
-            const a = Object.values(clientsData); 
-            document.getElementById('stTotal').innerText = a.length; 
-            document.getElementById('stActive').innerText = a.filter(c=>['בטיפול','מו"מ'].includes(c.status)).length; 
-            document.getElementById('stDeals').innerText = a.filter(c=>c.status==='חוזה').length; 
-        };
-        
-        window.updateFeed = () => {
-            const arr = Object.values(clientsData).sort((a,b) => b.lastUpdate - a.lastUpdate).slice(0,5);
-            document.getElementById('liveFeed').innerHTML = arr.map(c => 
-                `<div><i class="fa-solid fa-clock-rotate-left"></i> <b>${c.name}</b> עודכן לסטטוס ${c.status} <span style="opacity:0.5; font-size:11px;">(${new Date(c.lastUpdate).toLocaleTimeString()})</span></div>`
-            ).join('');
-        };
-        
-        // מילון שמות לעמודות
-        window.colName = (k) => ({
-            name:'שם לקוח', 
-            phone:'טלפון', 
-            status:'סטטוס', 
-            city:'עיר מגורים', 
-            email:'אימייל', 
-            budget:'תקציב',
-            spouse: 'בן/בת זוג'
-        }[k]||k);
-        
-        // צבעי סטטוס
-        window.stColor = (s) => ({
-            'חדש':'#e2e8f0', // אפור
-            'בטיפול':'#bfdbfe', // כחול
-            'מו"מ':'#fde047', // צהוב
-            'חוזה':'#86efac', // ירוק
-            'לא רלוונטי':'#fecaca' // אדום
-        }[s]||'#fff');
-        
-        // מעבר טאבים
-        window.switchTab = (el, id) => { 
-            document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active')); 
-            document.querySelectorAll('.tab-panel').forEach(x=>x.classList.remove('active')); 
-            el.classList.add('active'); 
-            document.getElementById(id).classList.add('active'); 
-        };
-        
-        // מחשבון משכנתא
-        window.calcModal = () => { 
-            const p=Number(document.getElementById('mLoan').value);
-            if(!p) return;
-            // הנחת בסיס + פריים
-            const r=(Number(settingsData.prime)+0.5)/100/12; 
-            const n=300; // 25 שנה
-            const res = Math.round(p*r*Math.pow(1+r,n)/(Math.pow(1+r,n)-1));
-            document.getElementById('mRes').innerText = res.toLocaleString() + ' ₪'; 
-        };
-        
-        // פעולות חיצוניות
+        // כלים
+        window.copyJoinLink = () => { navigator.clipboard.writeText(window.location.href); alert('הקישור הועתק! שלח אותו לעובדים.'); };
+        window.sendSystemEmail = () => window.location.href = `mailto:?subject=הזמנה למערכת נדלן&body=הכנס למערכת בקישור: ${window.location.href}`;
         window.sendWhatsapp = () => window.open(`https://wa.me/972${document.getElementById('inpPhone').value.replace('0','')}`);
         window.sendEmail = () => window.location.href=`mailto:${document.getElementById('inpEmail').value}`;
-        window.genPDF = () => {
-            const element = document.getElementById('modal');
-            const opt = {
-                margin: 10,
-                filename: `Client_${document.getElementById('inpName').value}.pdf`,
-                image: { type: 'jpeg', quality: 0.98 },
-                html2canvas: { scale: 2 },
-                jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
-            };
-            html2pdf().set(opt).from(element).save();
-        };
-        
-        // ייצוא לאקסל (גיבוי)
-        window.exportExcel = () => {
-            const ws = XLSX.utils.json_to_sheet(Object.values(clientsData).map(c=>({
-                ...c, 
-                children: JSON.stringify(c.children),
-                customData: JSON.stringify(c.customData)
-            })));
-            const wb = XLSX.utils.book_new();
-            XLSX.utils.book_append_sheet(wb, ws, "Clients_Backup");
-            XLSX.writeFile(wb, `Nadlan_Full_Backup_${new Date().toISOString().slice(0,10)}.xlsx`);
-        };
-        
-        // החלפת ערכת נושא
-        window.toggleTheme = () => {
-            const t = document.documentElement.getAttribute('data-theme')==='dark'?'light':'dark';
-            document.documentElement.setAttribute('data-theme', t);
-        }
+        window.genPDF = () => html2pdf(document.getElementById('t1'));
+        window.saveSettings = () => update(ref(db, 'settings'), { prime: document.getElementById('setPrime').value }).then(()=>alert('נשמר!'));
+        window.addChildRow = (n='', i='') => document.getElementById('childrenList').insertAdjacentHTML('beforeend', `<div style="display:flex; gap:5px; margin-bottom:5px;"><input class="cn" value="${n}" placeholder="שם"><input class="ci" value="${i}" placeholder="ת.ז"><button type="button" class="btn-icon" onclick="this.parentElement.remove()">-</button></div>`);
+        window.addTimestamp = () => document.getElementById('inpNotes').value = `[${new Date().toLocaleString()} ${currentUser.email.split('@')[0]}] ` + document.getElementById('inpNotes').value;
+        window.switchTab = (el, id) => { document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active')); document.querySelectorAll('.tab-panel').forEach(x=>x.classList.remove('active')); el.classList.add('active'); document.getElementById(id).classList.add('active'); };
+        window.calcModal = () => { const p=Number(document.getElementById('mLoan').value), r=0.065/12, n=300; document.getElementById('mRes').innerText = Math.round(p*r*Math.pow(1+r,n)/(Math.pow(1+r,n)-1)).toLocaleString(); };
+        window.updateStats = () => { const a = Object.values(clientsData); document.getElementById('stTotal').innerText = a.length; document.getElementById('stActive').innerText = a.filter(c=>['בטיפול','מו"מ'].includes(c.status)).length; document.getElementById('stDeals').innerText = a.filter(c=>c.status==='חוזה').length; };
+        window.updateFeed = () => {}; 
     </script>
 </body>
 </html>
